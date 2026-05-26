@@ -3,9 +3,10 @@
 ---
 
 > 基于[TeleportCommands](https://github.com/MrSn0wy/TeleportCommands)开发的面向Geyser-Fabric服务器的传送模组
+> 
+> 如果需要非Geyser版本和NeoForge版本，[请来这儿~](https://github.com/MrSn0wy/TeleportCommands)
 >
-> 添加了类似 `/gtpa` 的命令用于打开GUI界面，可以在触屏设备上获得更好的体验
->
+> 本模组添加了类似 `/gtpa` 的命令用于打开GUI界面，可以在触屏设备上获得更好的体验
 
 > [!WARNING]
 > 此模组必须依赖于Geyser-Fabric Mod
@@ -13,7 +14,7 @@
 > [!NOTE]
 > 如果装在客户端上，它依旧有用，在服务端添加本模组后按下`\`键可快速打开`/gtpa`图形界面
 
-### [更新日志](CHANGELOG.md) 在这儿~
+### [更新日志](CHANGELOG.md) 在这里！
 
 ---
 
