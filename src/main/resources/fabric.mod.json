@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "geyser_tpc",
+	"version": "${version}",
+	"name": "GeyserTPC",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"WJiangzhi"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": "",
+		"issues": ""
+	},
+	"license": "MIT",
+	"icon": "assets/geyser_tpc/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.wjiangzhi.geyser_tpc.GeyserTPC"
+		],
+		"client": [
+			"io.github.wjiangzhi.geyser_tpc.client.GeyserTPC"
+		]
+	},
+	"mixins": [
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": ">=${fabric_api_version}",
+		"geyser-fabric": ">=${geyser_mod_version}"
+	}
+}

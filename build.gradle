@@ -1,0 +1,81 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+    maven {
+        url = "https://repo.opencollab.dev/main/"
+    }
+
+    maven {
+        url = "https://maven.nucleoid.xyz"
+    }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "geyser_tpc" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    compileOnly "org.geysermc.geyser:api:${geyser_api_version}"
+    implementation include("eu.pb4:sgui:${sgui_version}")
+}
+
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand(
+                "version": project.version,
+                "loader_version": project.loader_version,
+				"minecraft_version": project.minecraft_version,
+				"java_version": project.java_version,
+				"fabric_api_version": project.fabric_api_version,
+				"geyser_mod_version": project.geyser_mod_version,
+
+        )
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}
+
+java {
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    def projectName = project.name
+    inputs.property "projectName", projectName
+
+    from("LICENSE") {
+        rename { "${it}_$projectName" }
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+    }
+}
