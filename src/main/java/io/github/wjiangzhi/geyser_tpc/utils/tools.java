@@ -78,7 +78,6 @@ public class tools {
         } else {
             // find a safe location in an x row radius
             while (row <= rows) {
-    //            TeleportCommands.LOGGER.info("currently doing row " + row + " of " + rows); //debug
                 for (int z = -row; z <= row; z++) {
                     for (int x = -row; x <= row; x++) {
                         for (int y = -row; y <= row; y++) {
@@ -158,7 +157,6 @@ public class tools {
 
             try {
                 if (!Objects.equals(language, "en_us")) {
-//                    TeleportCommands.LOGGER.warn("Key \"{}\" not found in the language: {}, falling back to default (en_us)", key, language);
 
                     String filePath = String.format("/assets/%s/lang/en_us.json", MOD_ID);
                     InputStream stream = GeyserTPC.class.getResourceAsStream(filePath);

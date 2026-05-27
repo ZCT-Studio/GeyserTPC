@@ -1,38 +1,42 @@
 package io.github.wjiangzhi.geyser_tpc;
 
 import com.google.gson.*;
-
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.wjiangzhi.geyser_tpc.storage.StorageManager;
 import io.github.wjiangzhi.geyser_tpc.commands.*;
 import io.github.wjiangzhi.geyser_tpc.storage.DeathLocationStorage;
-
+import io.github.wjiangzhi.geyser_tpc.storage.StorageManager;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-
-import net.minecraft.core.BlockPos;
-
-import static io.github.wjiangzhi.geyser_tpc.storage.StorageManager.*;
+import static io.github.wjiangzhi.geyser_tpc.storage.StorageManager.StorageClass;
+import static io.github.wjiangzhi.geyser_tpc.storage.StorageManager.StorageInit;
+import static io.github.wjiangzhi.geyser_tpc.utils.tools.getTranslatedText;
 
 public class GeyserTPC implements ModInitializer {
     public static Path SAVE_DIR;
     public static Path CONFIG_DIR;
     public static MinecraftServer SERVER;
-
-
+    public static boolean GEYSER_LOADED;
+    public static boolean FLOODGATE_LOADED;
+    public static boolean TELEPORT_COMMANDS_LOADED;
 
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         back.register(dispatcher);
@@ -40,16 +44,6 @@ public class GeyserTPC implements ModInitializer {
         tpa.register(dispatcher);
         warp.register(dispatcher);
         worldspawn.register(dispatcher);
-    }
-
-
-    // Runs when the playerDeath mixin calls it, updates the /back command position
-    public static void onPlayerDeath(ServerPlayer player) {
-        BlockPos pos = new BlockPos(player.getBlockX(), player.getBlockY(), player.getBlockZ());
-        String world = player.level().dimension().identifier().toString();
-        String uuid = player.getStringUUID();
-
-        DeathLocationStorage.setDeathLocation(uuid, pos, world);
     }
 
     // cleans and updates Storage to the newest "version". This is painful
@@ -226,6 +220,26 @@ public class GeyserTPC implements ModInitializer {
     @Override
     public void onInitialize() {
         Constants.LOGGER.info("Initializing GeyserTPC (V{})!", Constants.VERSION);
+        try {
+            Class.forName("org.geysermc.geyser.api.GeyserApi");
+            GEYSER_LOADED = true;
+        } catch (ClassNotFoundException e) {
+            GEYSER_LOADED = false;
+        }
+        try {
+            Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+            FLOODGATE_LOADED = true;
+        } catch (ClassNotFoundException e) {
+            FLOODGATE_LOADED = false;
+            Constants.LOGGER.warn("Floodgate not found, BE players will not be able to use the BE GUI");
+        }
+
+        if (FabricLoader.getInstance().isModLoaded("teleport_commands")) {
+            TELEPORT_COMMANDS_LOADED = true;
+            Constants.LOGGER.warn("The Teleport Commands mod has been loaded. The mod will use the implementation within the Teleport Commands mod, and this mod only adds GUI functionality");
+        } else {
+            TELEPORT_COMMANDS_LOADED = false;
+        }
 
         CommandRegistrationCallback.EVENT.register(
                 (dispatcher, registryAccess, environment) -> {
@@ -234,7 +248,6 @@ public class GeyserTPC implements ModInitializer {
         );
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-
             if (entity instanceof ServerPlayer player) {
                 BlockPos pos = new BlockPos(player.getBlockX(), player.getBlockY(), player.getBlockZ());
                 String world = player.level().dimension().identifier().toString();
@@ -245,19 +258,24 @@ public class GeyserTPC implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-
             SERVER = server;
-
             SAVE_DIR = server.getWorldPath(LevelResource.ROOT);
-
             CONFIG_DIR = Paths.get(System.getProperty("user.dir"))
                     .resolve("config");
-
             StorageManager.STORAGE = storageValidator();
-
             DeathLocationStorage.clearDeathLocations();
-
             Constants.LOGGER.info("Storage initialized!");
+        });
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (GEYSER_LOADED && !FLOODGATE_LOADED) {
+                handler.player.sendSystemMessage(
+                        Component.empty()
+                                .append("GeyserTPC: ")
+                                .append(getTranslatedText("mod.geyser_tpc.dependencies.floodgate.noload", handler.player))
+                                .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD),
+                        false);
+            }
         });
     }
 }

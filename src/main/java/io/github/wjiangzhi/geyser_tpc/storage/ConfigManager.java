@@ -1,6 +1,6 @@
 package io.github.wjiangzhi.geyser_tpc.storage;
 
-public class configManager {
+public class ConfigManager {
 //    Currently nothing to see here... yet
 
     // --- Ideas! ---

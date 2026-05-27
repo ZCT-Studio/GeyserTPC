@@ -9,7 +9,7 @@
 > 本模组添加了类似 `/gtpa` 的命令用于打开GUI界面，可以在触屏设备上获得更好的体验
 
 > [!WARNING]
-> 此模组必须依赖于Geyser-Fabric Mod
+> 此模组的基岩版UI依赖于Floodgate Mod，若服务器未安装Floodgate，基岩版无法打开GUI界面
 
 > [!NOTE]
 > 如果装在客户端上，它依旧有用，在服务端添加本模组后按下`\`键可快速打开`/gtpa`图形界面

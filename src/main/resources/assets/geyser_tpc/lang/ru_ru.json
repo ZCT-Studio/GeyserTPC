@@ -1,4 +1,31 @@
 {
+  "mod.geyser_tpc.dependencies.floodgate.noload": "Floodgate не установлен на сервере. Некоторые функции Bedrock могут работать некорректно",
+
+  "key.category.minecraft.geyser_tpc": "GeyserTPC",
+  "geyser_tpc.key.gtpa": "Открыть графический интерфейс TPA",
+
+  "gui.geyser_tpc.universal.gui.close": "Закрыть",
+  "gui.geyser_tpc.universal.gui.cancel": "Отмена",
+  "gui.geyser_tpc.universal.gui.yes": "Подтвердить",
+  "gui.geyser_tpc.universal.gui.save": "Сохранить",
+  "gui.geyser_tpc.universal.gui.back": "Назад",
+  "gui.geyser_tpc.universal.gui.del": "Удалить",
+  "gui.geyser_tpc.universal.gui.tp": "Телепорт",
+  "gui.geyser_tpc.universal.gui.rename": "Переименовать",
+  "gui.geyser_tpc.universal.gui.pgup": "Предыдущая страница",
+  "gui.geyser_tpc.universal.gui.pgdn": "Следующая страница",
+
+  "gui.geyser_tpc.home.homegui.title": "Меню \"Home\"",
+  "gui.geyser_tpc.home.homegui.defaulthome": "Дом по умолчанию",
+  "gui.geyser_tpc.home.homeactiongui.defaulthome": "Сделать по умолчанию",
+
+  "gui.geyser_tpc.tpa.tpagui.title": "Меню \"Tpa\"",
+  "gui.geyser_tpc.tpa.tpagui.denyall": "Отклонить все",
+  "gui.geyser_tpc.tpa.tpareqdialog.deny": "Отклонить",
+  "gui.geyser_tpc.tpa.tpareqdialog.accept": "Принять",
+
+  "gui.geyser_tpc.warp.warpgui.title": "Меню \"Warp\"",
+
   "commands.geyser_tpc.back.go": "Возвращение назад",
   "commands.geyser_tpc.back.same": "Вы уже на месте",
 
@@ -45,6 +72,7 @@
   "commands.geyser_tpc.tpa.alreadySent": "Запрос уже отправлен %0%",
   "commands.geyser_tpc.tpa.received": "Получен запрос Tpa%0% от %1%",
   "commands.geyser_tpc.tpa.sent": "Запрос Tpa%0% отправлен %1%",
+  "commands.geyser_tpc.tpa.be.prompt": "Вы можете использовать команду /gtpa для просмотра",
   "commands.geyser_tpc.tpa.accept": "[Принять]",
   "commands.geyser_tpc.tpa.deny": "[Отклонить]",
   "commands.geyser_tpc.tpa.expired": "Запрос Tpa%0% истёк",
@@ -62,6 +90,7 @@
   "commands.geyser_tpc.common.delete": "[Удалить]",
   "commands.geyser_tpc.common.default": "(По умолчанию)",
   "commands.geyser_tpc.common.defaultPrompt": "[Установить по умолчанию]",
+  "commands.geyser_tpc.common.be.prompt": "Можно использовать GUI для управления командами",
   "commands.geyser_tpc.common.noLocation": "Местоположение не найдено!",
   "commands.geyser_tpc.common.hoverCopy": "Нажмите, чтобы скопировать!",
   "commands.geyser_tpc.common.worldNotFound": "Мир не найден!",

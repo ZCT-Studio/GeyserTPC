@@ -24,7 +24,7 @@ public class StorageManager {
     public static StorageClass STORAGE;
 
     public static void StorageInit() {
-        STORAGE_FOLDER = GeyserTPC.SAVE_DIR.resolve("TeleportCommands/");
+        STORAGE_FOLDER = GeyserTPC.SAVE_DIR.resolve("GeyserTPC/");
         STORAGE_FILE = STORAGE_FOLDER.resolve("storage.json");
 
         try {

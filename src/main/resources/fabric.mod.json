@@ -3,14 +3,14 @@
 	"id": "geyser_tpc",
 	"version": "${version}",
 	"name": "GeyserTPC",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A teleportation mod for Geyser-Fabric servers developed based on TeleportCommands",
 	"authors": [
 		"WJiangzhi"
 	],
 	"contact": {
-		"homepage": "",
-		"sources": "",
-		"issues": ""
+		"homepage": "https://modrinth.com/mod/geysertpc",
+		"sources": "https://github.com/WJiangzhi/GeyserTPC",
+		"issues": "https://github.com/WJiangzhi/GeyserTPC/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/geyser_tpc/icon.png",
@@ -29,7 +29,6 @@
 		"fabricloader": ">=${loader_version}",
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
-		"fabric-api": ">=${fabric_api_version}",
-		"geyser-fabric": ">=${geyser_mod_version}"
+		"fabric-api": ">=${fabric_api_version}"
 	}
 }

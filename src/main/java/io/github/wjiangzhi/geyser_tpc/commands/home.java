@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.wjiangzhi.geyser_tpc.Constants;
+import io.github.wjiangzhi.geyser_tpc.GeyserTPC;
 import io.github.wjiangzhi.geyser_tpc.common.NamedLocation;
 import io.github.wjiangzhi.geyser_tpc.common.Player;
 import io.github.wjiangzhi.geyser_tpc.storage.StorageManager;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.geyser.api.GeyserApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,128 +38,129 @@ import static net.minecraft.commands.Commands.argument;
 
 public class home {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
+        if (!GeyserTPC.TELEPORT_COMMANDS_LOADED) {
+            commandDispatcher.register(Commands.literal("sethome")
+                    .then(argument("name", StringArgumentType.string())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("sethome")
-                .then(argument("name", StringArgumentType.string())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    SetHome(player, name);
 
-                            try {
-                                SetHome(player, name);
-
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while setting a home! => ", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
-
-
-        commandDispatcher.register(Commands.literal("home")
-                .executes(context -> {
-                    final ServerPlayer player = context.getSource().getPlayerOrException();
-
-                    try {
-                        GoHome(player, "");
-
-                    } catch (Exception e) {
-                        Constants.LOGGER.error("Error while going home! => ", e);
-                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                        return 1;
-                    }
-                    return 0;
-                })
-                .then(argument("name", StringArgumentType.string())
-                        .suggests(new HomeSuggestionProvider())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
-
-                            try {
-                                GoHome(player, name);
-
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while going to a specific home! => ", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
-
-        commandDispatcher.register(Commands.literal("delhome")
-                .then(argument("name", StringArgumentType.string())
-                        .suggests(new HomeSuggestionProvider())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
-
-                            try {
-                                DeleteHome(player, name);
-
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while deleting a home! => ", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.deleteError", player)
-                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
-
-        commandDispatcher.register(Commands.literal("renamehome")
-                .then(argument("name", StringArgumentType.string())
-                        .suggests(new HomeSuggestionProvider())
-                        .then(argument("newName", StringArgumentType.string())
-                                .executes(context -> {
-                                    final String name = StringArgumentType.getString(context, "name");
-                                    final String newName = StringArgumentType.getString(context, "newName");
-                                    final ServerPlayer player = context.getSource().getPlayerOrException();
-
-                                    try {
-                                        RenameHome(player, name, newName);
-
-                                    } catch (Exception e) {
-                                        Constants.LOGGER.error("Error while renaming a home! => ", e);
-                                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.renameError", player)
-                                                .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                        return 1;
-                                    }
-                                    return 0;
-                                }))));
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while setting a home! => ", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
 
-        commandDispatcher.register(Commands.literal("defaulthome")
-                .then(argument("name", StringArgumentType.string()).suggests(new HomeSuggestionProvider())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+            commandDispatcher.register(Commands.literal("home")
+                    .executes(context -> {
+                        final ServerPlayer player = context.getSource().getPlayerOrException();
 
-                            try {
-                                SetDefaultHome(player, name);
+                        try {
+                            GoHome(player, "");
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while setting the default home! => ", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.defaultError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Error while going home! => ", e);
+                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                            return 1;
+                        }
+                        return 0;
+                    })
+                    .then(argument("name", StringArgumentType.string())
+                            .suggests(new HomeSuggestionProvider())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("homes")
-                .executes(context -> {
-                    final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    GoHome(player, name);
 
-                    try {
-                        PrintHomes(player);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while going to a specific home! => ", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                    } catch (Exception e) {
-                        Constants.LOGGER.error("Error while printing the homes! => ", e);
-                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.homes.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                        return 1;
-                    }
-                    return 0;
-                }));
+            commandDispatcher.register(Commands.literal("delhome")
+                    .then(argument("name", StringArgumentType.string())
+                            .suggests(new HomeSuggestionProvider())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
+
+                                try {
+                                    DeleteHome(player, name);
+
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while deleting a home! => ", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.deleteError", player)
+                                            .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
+
+            commandDispatcher.register(Commands.literal("renamehome")
+                    .then(argument("name", StringArgumentType.string())
+                            .suggests(new HomeSuggestionProvider())
+                            .then(argument("newName", StringArgumentType.string())
+                                    .executes(context -> {
+                                        final String name = StringArgumentType.getString(context, "name");
+                                        final String newName = StringArgumentType.getString(context, "newName");
+                                        final ServerPlayer player = context.getSource().getPlayerOrException();
+
+                                        try {
+                                            RenameHome(player, name, newName);
+
+                                        } catch (Exception e) {
+                                            Constants.LOGGER.error("Error while renaming a home! => ", e);
+                                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.renameError", player)
+                                                    .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))));
+
+
+            commandDispatcher.register(Commands.literal("defaulthome")
+                    .then(argument("name", StringArgumentType.string()).suggests(new HomeSuggestionProvider())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
+
+                                try {
+                                    SetDefaultHome(player, name);
+
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while setting the default home! => ", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.defaultError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
+
+            commandDispatcher.register(Commands.literal("homes")
+                    .executes(context -> {
+                        final ServerPlayer player = context.getSource().getPlayerOrException();
+
+                        try {
+                            PrintHomes(player);
+
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Error while printing the homes! => ", e);
+                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.homes.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                            return 1;
+                        }
+                        return 0;
+                    }));
+        }
         commandDispatcher.register(Commands.literal("ghome")
                 .executes(context -> {
                     final ServerPlayer player = context.getSource().getPlayerOrException();
@@ -503,59 +506,64 @@ public class home {
             // linebreak
             message.append("\n");
 
-            // Teleport, rename, set default and delete buttons
-            message.append(Component.literal("     | ")
-                            .withStyle(ChatFormatting.AQUA)
-                    )
-                    .append(getTranslatedText("commands.geyser_tpc.common.tp", player)
-                            .withStyle(ChatFormatting.GREEN)
-                            .withStyle(style ->
-                                    style.withClickEvent(
-                                            new ClickEvent.RunCommand(
-                                                    String.format("/home \"%s\"", currentHome.getName())
-                                            )
-                                    )
-                            )
-                    )
-                    .append(" ")
-                    .append(getTranslatedText("commands.geyser_tpc.common.rename", player)
-                            .withStyle(ChatFormatting.BLUE)
-                            .withStyle(style ->
-                                    style.withClickEvent(
-                                            new ClickEvent.SuggestCommand(
-                                                    String.format("/renamehome \"%s\" ", currentHome.getName())
-                                            )
-                                    )
-                            )
-                    )
-                    .append(" ");
-
-            // add set default button if it isn't the default home
-            if (!playerStorage.getDefaultHome().equals(currentHome.getName())) {
-                message.append(getTranslatedText("commands.geyser_tpc.common.defaultPrompt", player)
-                                .withStyle(ChatFormatting.DARK_AQUA)
+            //noinspection ConstantValue
+            if (GeyserApi.api() != null && GeyserApi.api().connectionByUuid(player.getUUID()) != null) {
+                message.append(getTranslatedText("commands.geyser_tpc.common.be.prompt", player))
+                        .append(Component.literal(" /ghome"));
+            } else {
+                // Teleport, rename, set default and delete buttons
+                message.append(Component.literal("     | ")
+                                .withStyle(ChatFormatting.AQUA)
+                        )
+                        .append(getTranslatedText("commands.geyser_tpc.common.tp", player)
+                                .withStyle(ChatFormatting.GREEN)
                                 .withStyle(style ->
                                         style.withClickEvent(
                                                 new ClickEvent.RunCommand(
-                                                        String.format("/defaulthome \"%s\"", currentHome.getName())
+                                                        String.format("/home \"%s\"", currentHome.getName())
+                                                )
+                                        )
+                                )
+                        )
+                        .append(" ")
+                        .append(getTranslatedText("commands.geyser_tpc.common.rename", player)
+                                .withStyle(ChatFormatting.BLUE)
+                                .withStyle(style ->
+                                        style.withClickEvent(
+                                                new ClickEvent.SuggestCommand(
+                                                        String.format("/renamehome \"%s\" ", currentHome.getName())
                                                 )
                                         )
                                 )
                         )
                         .append(" ");
-            }
 
-            message.append(getTranslatedText("commands.geyser_tpc.common.delete", player)
-                    .withStyle(ChatFormatting.RED)
-                    .withStyle(style ->
-                            style.withClickEvent(
-                                    new ClickEvent.SuggestCommand(
-                                            String.format("/delhome \"%s\"", currentHome.getName())
+                // add set default button if it isn't the default home
+                if (!playerStorage.getDefaultHome().equals(currentHome.getName())) {
+                    message.append(getTranslatedText("commands.geyser_tpc.common.defaultPrompt", player)
+                                    .withStyle(ChatFormatting.DARK_AQUA)
+                                    .withStyle(style ->
+                                            style.withClickEvent(
+                                                    new ClickEvent.RunCommand(
+                                                            String.format("/defaulthome \"%s\"", currentHome.getName())
+                                                    )
+                                            )
                                     )
                             )
-                    )
-            );
+                            .append(" ");
+                }
 
+                message.append(getTranslatedText("commands.geyser_tpc.common.delete", player)
+                        .withStyle(ChatFormatting.RED)
+                        .withStyle(style ->
+                                style.withClickEvent(
+                                        new ClickEvent.SuggestCommand(
+                                                String.format("/delhome \"%s\"", currentHome.getName())
+                                        )
+                                )
+                        )
+                );
+            }
             // linebreak
             message.append("\n");
         }
@@ -573,14 +581,13 @@ public class home {
         public HomeGUI(ServerPlayer player) {
             super(MenuType.GENERIC_9x3, player, false);
 
-            setTitle(Component.literal("Homes GUI"));
+            setTitle(getTranslatedText("gui.geyser_tpc.home.homegui.title", player));
             loadHomes();
             init();
         }
 
         private void loadHomes() {
             Optional<Player> optionalPlayerStorage = STORAGE.getPlayer(player.getStringUUID());
-
             if (optionalPlayerStorage.isEmpty()) {
                 player.sendSystemMessage(
                         getTranslatedText("commands.geyser_tpc.home.homeless", player)
@@ -632,7 +639,7 @@ public class home {
 
                 this.setSlot(slot,
                         new GuiElementBuilder(isDefault ? Items.NETHER_STAR : Items.RED_BED)
-                                .setName(Component.literal(home.getName() + (isDefault ? "[Default]" : "")))
+                                .setName(Component.literal(home.getName()).append(isDefault ? Component.literal("[").append(getTranslatedText("gui.geyser_tpc.home.homegui.defaulthome", player)).append("]") : Component.empty()))
                                 .setCallback((i, t, a, g) -> {
                                     new HomeActionGUI(player, home, this).open();
                                     g.close();
@@ -643,7 +650,7 @@ public class home {
                 slot++;
             }
 
-            for (int i = 18; i < 27; i++) {
+            for (int i = 18; i <= 23; i++) {
                 this.setSlot(i,
                         new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
                                 .setName(Component.empty())
@@ -652,14 +659,14 @@ public class home {
 
             this.setSlot(24,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("X"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
                             .setCallback((i, t, a, g) -> g.close())
             );
 
             this.setSlot(25,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Constants.GUI.ARROW_LEFT)
-                            .setName(Component.literal("<"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player))
                             .setCallback((i, t, a, g) -> {
                                 if (page > 0) page--;
                                 init();
@@ -668,7 +675,7 @@ public class home {
 
             this.setSlot(26,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
-                            .setName(Component.literal(">"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player))
                             .setProfileSkinTexture(Constants.GUI.ARROW_RIGHT)
                             .setCallback((i, t, a, g) -> {
                                 if ((page + 1) * PAGE_SIZE < homes.size()) {
@@ -680,8 +687,8 @@ public class home {
         }
 
         private void clearSlots() {
-            for (int i = 0; i < 27; i++) {
-                this.clearSlot(i);
+            for (int idx = 0; idx < 27; idx++) {
+                this.clearSlot(idx);
             }
         }
     }
@@ -705,7 +712,7 @@ public class home {
             setTitle(Component.literal(home.getName()));
             this.setSlot(0,
                     new GuiElementBuilder(Items.ENDER_PEARL)
-                            .setName(Component.literal("Teleport"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.tp", player))
                             .setCallback((i, t, a, g) -> {
                                 try {
                                     GoHome(player, home.getName());
@@ -718,7 +725,7 @@ public class home {
 
             this.setSlot(1,
                     new GuiElementBuilder(Items.TNT)
-                            .setName(Component.literal("Delete"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.del", player))
                             .setCallback((i, t, a, g) -> {
                                 new HomeDeleteGUI(player, home, this).open();
                                 g.close();
@@ -727,7 +734,7 @@ public class home {
 
             this.setSlot(2,
                     new GuiElementBuilder(Items.NAME_TAG)
-                            .setName(Component.literal("Rename"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player))
                             .setCallback((i, t, a, g) -> {
                                 new HomeRenameGUI(player, home, this).open();
                                 g.close();
@@ -736,7 +743,7 @@ public class home {
 
             this.setSlot(3,
                     new GuiElementBuilder(Items.NETHER_STAR)
-                            .setName(Component.literal("DefaultHome"))
+                            .setName(getTranslatedText("gui.geyser_tpc.home.homeactiongui.defaulthome", player))
                             .setCallback((i, t, a, g) -> {
                                 try {
                                     SetDefaultHome(player, home.getName());
@@ -754,9 +761,16 @@ public class home {
                             })
             );
 
+            for (int i = 4; i <= 6; i++) {
+                this.setSlot(i,
+                        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
+                                .setName(Component.empty())
+                );
+            }
+
             this.setSlot(7,
                     new GuiElementBuilder(Items.ARROW)
-                            .setName(Component.literal("Back"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.back", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -768,7 +782,7 @@ public class home {
 
             this.setSlot(8,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Close"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
                             .setCallback((i, t, a, g) -> g.close())
             );
         }
@@ -785,11 +799,11 @@ public class home {
             this.home = home;
             this.parent = parent;
 
-            setTitle(Component.literal("Delete home(" + home.getName() + ")?"));
+            setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).append(" Home \"" + home.getName() + "\""));
 
             this.setSlot(0,
                     new GuiElementBuilder(Items.RED_CONCRETE)
-                            .setName(Component.literal("No"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -800,7 +814,7 @@ public class home {
 
             this.setSlot(4,
                     new GuiElementBuilder(Items.LIME_CONCRETE)
-                            .setName(Component.literal("Yes"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.yes", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
 
@@ -836,7 +850,7 @@ public class home {
 
             setDefaultInputValue(home.getName());
 
-            setTitle(Component.literal("Rename" + " \"" + home.getName() + "\""));
+            setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).append(" Home \"" + home.getName() + "\""));
 
             Optional<Player> optionalPlayerStorage = STORAGE.getPlayer(player.getStringUUID());
 
@@ -854,7 +868,7 @@ public class home {
 
             this.setSlot(1,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Cancel"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -865,7 +879,7 @@ public class home {
 
             this.setSlot(2,
                     new GuiElementBuilder(Items.ANVIL)
-                            .setName(Component.literal("Rename"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.save", player))
                             .setCallback((i, t, a, g) -> {
                                 String input = getInput();
 

@@ -1,4 +1,31 @@
 {
+  "mod.geyser_tpc.dependencies.floodgate.noload": "Floodgate non è installato sul server. Alcune funzionalità Bedrock potrebbero non funzionare correttamente",
+
+  "key.category.minecraft.geyser_tpc": "GeyserTPC",
+  "geyser_tpc.key.gtpa": "Apri GUI TPA",
+
+  "gui.geyser_tpc.universal.gui.close": "Chiudi",
+  "gui.geyser_tpc.universal.gui.cancel": "Annulla",
+  "gui.geyser_tpc.universal.gui.yes": "Conferma",
+  "gui.geyser_tpc.universal.gui.save": "Salva",
+  "gui.geyser_tpc.universal.gui.back": "Indietro",
+  "gui.geyser_tpc.universal.gui.del": "Elimina",
+  "gui.geyser_tpc.universal.gui.tp": "Teletrasporto",
+  "gui.geyser_tpc.universal.gui.rename": "Rinomina",
+  "gui.geyser_tpc.universal.gui.pgup": "Pagina precedente",
+  "gui.geyser_tpc.universal.gui.pgdn": "Pagina successiva",
+
+  "gui.geyser_tpc.home.homegui.title": "Menu \"Home\"",
+  "gui.geyser_tpc.home.homegui.defaulthome": "Home predefinita",
+  "gui.geyser_tpc.home.homeactiongui.defaulthome": "Imposta come predefinita",
+
+  "gui.geyser_tpc.tpa.tpagui.title": "Menu \"Tpa\"",
+  "gui.geyser_tpc.tpa.tpagui.denyall": "Rifiuta tutti",
+  "gui.geyser_tpc.tpa.tpareqdialog.deny": "Rifiuta",
+  "gui.geyser_tpc.tpa.tpareqdialog.accept": "Accetta",
+
+  "gui.geyser_tpc.warp.warpgui.title": "Menu \"Warp\"",
+
   "commands.geyser_tpc.back.go": "Stai tornando indietro",
   "commands.geyser_tpc.back.same": "Sei già tornato indietro",
 
@@ -45,6 +72,7 @@
   "commands.geyser_tpc.tpa.alreadySent": "Hai già inviato una richiesta a %0%",
   "commands.geyser_tpc.tpa.received": "Richiesta Tpa%0% ricevuta da %1%",
   "commands.geyser_tpc.tpa.sent": "Richiesta Tpa%0% inviata a %1%",
+  "commands.geyser_tpc.tpa.be.prompt": "Puoi usare il comando /gtpa per visualizzare",
   "commands.geyser_tpc.tpa.accept": "[Accetta]",
   "commands.geyser_tpc.tpa.deny": "[Rifiuta]",
   "commands.geyser_tpc.tpa.expired": "Richiesta Tpa%0% scaduta",
@@ -62,6 +90,7 @@
   "commands.geyser_tpc.common.delete": "[Elimina]",
   "commands.geyser_tpc.common.default": "(Predefinita)",
   "commands.geyser_tpc.common.defaultPrompt": "[Imposta predefinita]",
+  "commands.geyser_tpc.common.be.prompt": "È possibile usare la GUI per gestire i comandi",
   "commands.geyser_tpc.common.noLocation": "Nessuna posizione trovata!",
   "commands.geyser_tpc.common.hoverCopy": "Clicca per copiare!",
   "commands.geyser_tpc.common.worldNotFound": "Mondo non trovato!",

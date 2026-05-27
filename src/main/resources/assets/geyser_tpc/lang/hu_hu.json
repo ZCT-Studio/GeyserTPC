@@ -1,4 +1,31 @@
 {
+  "mod.geyser_tpc.dependencies.floodgate.noload": "A Floodgate nincs telepítve a szerverre, a Bedrock egyes funkciói nem biztos, hogy megfelelően működnek",
+
+  "key.category.minecraft.geyser_tpc": "GeyserTPC",
+  "geyser_tpc.key.gtpa": "Tpa kezelőfelület megnyitása",
+
+  "gui.geyser_tpc.universal.gui.close": "Bezárás",
+  "gui.geyser_tpc.universal.gui.cancel": "Mégse",
+  "gui.geyser_tpc.universal.gui.yes": "Megerősítés",
+  "gui.geyser_tpc.universal.gui.save": "Mentés",
+  "gui.geyser_tpc.universal.gui.back": "Vissza",
+  "gui.geyser_tpc.universal.gui.del": "Törlés",
+  "gui.geyser_tpc.universal.gui.tp": "Teleportálás",
+  "gui.geyser_tpc.universal.gui.rename": "Átnevezés",
+  "gui.geyser_tpc.universal.gui.pgup": "Előző oldal",
+  "gui.geyser_tpc.universal.gui.pgdn": "Következő oldal",
+
+  "gui.geyser_tpc.home.homegui.title": "\"Home\" menü",
+  "gui.geyser_tpc.home.homegui.defaulthome": "Alapértelmezett otthon",
+  "gui.geyser_tpc.home.homeactiongui.defaulthome": "Beállítás alapértelmezettnek",
+
+  "gui.geyser_tpc.tpa.tpagui.title": "\"Tpa\" menü",
+  "gui.geyser_tpc.tpa.tpagui.denyall": "Összes elutasítása",
+  "gui.geyser_tpc.tpa.tpareqdialog.deny": "Elutasítás",
+  "gui.geyser_tpc.tpa.tpareqdialog.accept": "Elfogadás",
+
+  "gui.geyser_tpc.warp.warpgui.title": "\"Warp\" menü",
+
   "commands.geyser_tpc.back.go": "Indulás vissza",
   "commands.geyser_tpc.back.same": "Vissza",
 
@@ -45,6 +72,7 @@
   "commands.geyser_tpc.tpa.alreadySent": "Egy kérés már el lett küldve %0%-nek",
   "commands.geyser_tpc.tpa.received": "Tpa%0% kérés megkapva %1%-től",
   "commands.geyser_tpc.tpa.sent": "tpa%0% kérés elküldve %1%-nek",
+  "commands.geyser_tpc.tpa.be.prompt": "A megtekintéshez használd a /gtpa parancsot",
   "commands.geyser_tpc.tpa.accept": "[Elfogadás]",
   "commands.geyser_tpc.tpa.deny": "[Elutasítás]",
   "commands.geyser_tpc.tpa.expired": "Tpa%0% kérés lejárt",
@@ -62,6 +90,7 @@
   "commands.geyser_tpc.common.delete": "[Törlés]",
   "commands.geyser_tpc.common.default": "(Alap)",
   "commands.geyser_tpc.common.defaultPrompt": "[Set Default]",
+  "commands.geyser_tpc.common.be.prompt": "A parancsok kezeléséhez GUI használható",
   "commands.geyser_tpc.common.noLocation": "Nem található a koordináta",
   "commands.geyser_tpc.common.hoverCopy": "Click to copy!",
   "commands.geyser_tpc.common.worldNotFound": "World not found!",

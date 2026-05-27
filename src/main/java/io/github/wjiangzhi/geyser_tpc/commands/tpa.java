@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.geyser.api.GeyserApi;
 
 import java.util.*;
 
@@ -27,81 +28,82 @@ public class tpa {
     public static final ArrayList<tpaArrayClass> tpaList = new ArrayList<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
+        if (!GeyserTPC.TELEPORT_COMMANDS_LOADED) {
+            commandDispatcher.register(Commands.literal("tpa")
+                    .then(Commands.argument("player", EntityArgument.player())
+                            .executes(context -> {
+                                final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("tpa")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> {
-                            final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    tpaCommandHandler(player, TargetPlayer, false);
 
-                            try {
-                                tpaCommandHandler(player, TargetPlayer, false);
+                                } catch (Exception e) {
+                                    // this shouldn't happen with any of these commands, but if it does happen I am at least printing it to the logs and catching it.
+                                    // if it appears that this can happen then I'll add error messages for the client, for now the default minecraft ones will do
+                                    Constants.LOGGER.error("Error while sending a tpa request! => ", e);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                            } catch (Exception e) {
-                                // this shouldn't happen with any of these commands, but if it does happen I am at least printing it to the logs and catching it.
-                                // if it appears that this can happen then I'll add error messages for the client, for now the default minecraft ones will do
-                                Constants.LOGGER.error("Error while sending a tpa request! => ", e);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("tpahere")
+                    .then(Commands.argument("player", EntityArgument.player())
+                            .executes(context -> {
+                                final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("tpahere")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> {
-                            final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    tpaCommandHandler(player, TargetPlayer, true);
 
-                            try {
-                                tpaCommandHandler(player, TargetPlayer, true);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while sending a tpahere request! => ", e);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while sending a tpahere request! => ", e);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("tpaaccept")
+                    .then(Commands.argument("player", EntityArgument.player()).suggests(new tpaSuggestionProvider())
+                            .executes(context -> {
+                                final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("tpaaccept")
-                .then(Commands.argument("player", EntityArgument.player()).suggests(new tpaSuggestionProvider())
-                        .executes(context -> {
-                            final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    tpaAccept(player, TargetPlayer);
 
-                            try {
-                                tpaAccept(player, TargetPlayer);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while accepting a tpa(here) request! => ", e);
+                                    return 1;
+                                }
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while accepting a tpa(here) request! => ", e);
-                                return 1;
-                            }
+                                return 0;
+                            })));
 
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("tpadeny")
+                    .then(Commands.argument("player", EntityArgument.player()).suggests(new tpaSuggestionProvider())
+                            .executes(context -> {
+                                final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("tpadeny")
-                .then(Commands.argument("player", EntityArgument.player()).suggests(new tpaSuggestionProvider())
-                        .executes(context -> {
-                            final ServerPlayer TargetPlayer = EntityArgument.getPlayer(context, "player");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    tpaDeny(player, TargetPlayer);
 
-                            try {
-                                tpaDeny(player, TargetPlayer);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while denying a tpa(here) request! => ", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while denying a tpa(here) request! => ", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-
-                            return 0;
-                        })));
+                                return 0;
+                            })));
+        }
         commandDispatcher.register(Commands.literal("gtpa")
                 .executes(context -> {
                     final ServerPlayer player = context.getSource().getPlayerOrException();
 
                     try {
-                        new TpaGenGUI(player).open();
+                        new TpaGUI(player).open();
 
                     } catch (Exception e) {
                         Constants.LOGGER.error("Error while denying a tpa(here) request! => ", e);
@@ -141,31 +143,42 @@ public class tpa {
                     , true
             );
 
-            ToPlayer.sendSystemMessage(getTranslatedText("commands.geyser_tpc.tpa.received", ToPlayer, Component.literal(hereText), Component.literal(ReceivedFromPlayer).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)).withStyle(ChatFormatting.AQUA)
-                            .append("\n")
-                            .append(getTranslatedText("commands.geyser_tpc.tpa.accept", ToPlayer)
-                                    .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)
-                                    .withStyle(style -> style
-                                            .withClickEvent(
-                                                    new ClickEvent.RunCommand(
-                                                            String.format("/tpaaccept %s", ReceivedFromPlayer)
-                                                    )
-                                            )
-                                    )
-                            )
-                            .append(" ")
-                            .append(getTranslatedText("commands.geyser_tpc.tpa.deny", ToPlayer)
-                                    .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
-                                    .withStyle(style -> style
-                                            .withClickEvent(
-                                                    new ClickEvent.RunCommand(
-                                                            String.format("/tpadeny %s", ReceivedFromPlayer)
-                                                    )
-                                            )
-                                    )
-                            ),
-                    false
-            );
+            //noinspection ConstantValue
+            if (GeyserApi.api() != null && GeyserApi.api().connectionByUuid(ToPlayer.getUUID()) != null) {
+                ToPlayer.sendSystemMessage(getTranslatedText("commands.geyser_tpc.tpa.received", ToPlayer, Component.literal(hereText), Component.literal(ReceivedFromPlayer).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)).withStyle(ChatFormatting.AQUA)
+                                .append("\n")
+                                .append(getTranslatedText("commands.geyser_tpc.tpa.accept", ToPlayer)
+                                        .withStyle(ChatFormatting.GRAY, ChatFormatting.BOLD)
+                                ),
+                        false
+                );
+            } else {
+                ToPlayer.sendSystemMessage(getTranslatedText("commands.geyser_tpc.tpa.received", ToPlayer, Component.literal(hereText), Component.literal(ReceivedFromPlayer).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)).withStyle(ChatFormatting.AQUA)
+                                .append("\n")
+                                .append(getTranslatedText("commands.geyser_tpc.tpa.accept", ToPlayer)
+                                        .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)
+                                        .withStyle(style -> style
+                                                .withClickEvent(
+                                                        new ClickEvent.RunCommand(
+                                                                String.format("/tpaaccept %s", ReceivedFromPlayer)
+                                                        )
+                                                )
+                                        )
+                                )
+                                .append(" ")
+                                .append(getTranslatedText("commands.geyser_tpc.tpa.deny", ToPlayer)
+                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
+                                        .withStyle(style -> style
+                                                .withClickEvent(
+                                                        new ClickEvent.RunCommand(
+                                                                String.format("/tpadeny %s", ReceivedFromPlayer)
+                                                        )
+                                                )
+                                        )
+                                ),
+                        false
+                );
+            }
 
             Timer timer = new Timer();
             timer.schedule(
@@ -259,16 +272,16 @@ public class tpa {
         }
     }
 
-    public static class TpaGenGUI extends SimpleGui {
+    public static class TpaGUI extends SimpleGui {
 
         private static final int PAGE_SIZE = 9;
 
         private int page = 0;
 
-        public TpaGenGUI(ServerPlayer player) {
+        public TpaGUI(ServerPlayer player) {
             super(MenuType.GENERIC_9x3, player, false);
 
-            setTitle(Component.literal("Tpa GUI"));
+            setTitle(getTranslatedText("gui.geyser_tpc.tpa.tpagui.title", player));
 
             init();
         }
@@ -352,7 +365,7 @@ public class tpa {
                             .setName(Component.literal("Tpa"))
                             .setCallback((_, _, _, g) -> {
 
-                                new TpaSelectTpaPlayerGUI(player, false, this).open();
+                                new TpaSelectPlayerGUI(player, false, this).open();
                                 g.close();
                             })
             );
@@ -362,14 +375,14 @@ public class tpa {
                             .setName(Component.literal("TpaHere"))
                             .setCallback((_, _, _, g) -> {
 
-                                new TpaSelectTpaPlayerGUI(player, true, this).open();
+                                new TpaSelectPlayerGUI(player, true, this).open();
                                 g.close();
                             })
             );
 
             this.setSlot(23,
                     new GuiElementBuilder(Items.LAVA_BUCKET)
-                            .setName(Component.literal("Clear"))
+                            .setName(getTranslatedText("gui.geyser_tpc.tpa.tpagui.denyall", player))
                             .setCallback((_, _, _, _) -> {
 
                                 List<tpaArrayClass> removeList = tpaList.stream()
@@ -393,9 +406,15 @@ public class tpa {
             );
 
             this.setSlot(24,
+                    new GuiElementBuilder(Items.BARRIER)
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
+                            .setCallback((_, _, _, g) -> g.close())
+            );
+
+            this.setSlot(25,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Constants.GUI.ARROW_LEFT)
-                            .setName(Component.literal("<"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player))
                             .setCallback((_, _, _, _) -> {
                                 if (page > 0) {
                                     page--;
@@ -404,32 +423,25 @@ public class tpa {
                             })
             );
 
-            this.setSlot(25,
+            this.setSlot(26,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Constants.GUI.ARROW_RIGHT)
-                            .setName(Component.literal(">"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player))
                             .setCallback((_, _, _, _) -> {
-
                                 page++;
                                 init();
                             })
             );
-
-            this.setSlot(26,
-                    new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Close"))
-                            .setCallback((_, _, _, g) -> g.close())
-            );
         }
 
         private void clearSlots() {
-            for (int i = 0; i < 27; i++) {
-                this.clearSlot(i);
+            for (int idx = 0; idx < 27; idx++) {
+                this.clearSlot(idx);
             }
         }
     }
 
-    public static class TpaSelectTpaPlayerGUI extends SimpleGui {
+    public static class TpaSelectPlayerGUI extends SimpleGui {
 
         private static final int PAGE_SIZE = 18;
 
@@ -437,14 +449,14 @@ public class tpa {
 
         private final boolean here;
 
-        private final TpaGenGUI parent;
+        private final TpaGUI parent;
 
         private List<ServerPlayer> players = new ArrayList<>();
 
-        public TpaSelectTpaPlayerGUI(
+        public TpaSelectPlayerGUI(
                 ServerPlayer player,
                 boolean here,
-                TpaGenGUI parent
+                TpaGUI parent
         ) {
 
             super(MenuType.GENERIC_9x3, player, false);
@@ -453,7 +465,7 @@ public class tpa {
             this.parent = parent;
 
             setTitle(Component.literal(
-                    here ? "TpaHere from ..." : "Tpa to ..."
+                    here ? "TpaHere..." : "Tpa..."
             ));
 
             loadPlayers();
@@ -529,62 +541,53 @@ public class tpa {
 
             this.setSlot(23,
                     new GuiElementBuilder(Items.ARROW)
-                            .setName(Component.literal("Back"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.back", player))
                             .setCallback((_, _, _, g) -> {
-
                                 g.close();
-
-                                parent.open();
-
+                                if (parent != null) {
+                                    parent.open();
+                                }
                             })
             );
 
             this.setSlot(24,
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                            .setProfileSkinTexture(
-                                    Constants.GUI.ARROW_LEFT
-                            )
-                            .setName(Component.literal("<"))
-                            .setCallback((_, _, _, _) -> {
-
-                                if (page > 0) {
-
-                                    page--;
-
-                                    init();
-                                }
-                            })
+                    new GuiElementBuilder(Items.BARRIER)
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
+                            .setCallback((_, _, _, g) -> g.close())
             );
 
             this.setSlot(25,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(
-                                    Constants.GUI.ARROW_RIGHT
+                                    Constants.GUI.ARROW_LEFT
                             )
-                            .setName(Component.literal(">"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player))
                             .setCallback((_, _, _, _) -> {
-
-                                if ((page + 1) * PAGE_SIZE < players.size()) {
-
-                                    page++;
-
+                                if (page > 0) {
+                                    page--;
                                     init();
                                 }
                             })
             );
 
             this.setSlot(26,
-                    new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("X"))
-                            .setCallback((_, _, _, g) -> g.close())
+                    new GuiElementBuilder(Items.PLAYER_HEAD)
+                            .setProfileSkinTexture(
+                                    Constants.GUI.ARROW_RIGHT
+                            )
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player))
+                            .setCallback((_, _, _, _) -> {
+                                if ((page + 1) * PAGE_SIZE < players.size()) {
+                                    page++;
+                                    init();
+                                }
+                            })
             );
         }
 
         private void clearSlots() {
-
-            for (int i = 0; i < 27; i++) {
-
-                this.clearSlot(i);
+            for (int idx = 0; idx < 27; idx++) {
+                this.clearSlot(idx);
             }
         }
     }
@@ -594,15 +597,15 @@ public class tpa {
                 ServerPlayer player,
                 ServerPlayer fromPlayer,
                 boolean  here,
-                TpaGenGUI parent
+                TpaGUI parent
         ) {
             super(MenuType.HOPPER, player, false);
 
-            setTitle(Component.literal(fromPlayer.getName() + " " + (here ? "tpaHere from" : "tpa to") + " " + "you"));
+            setTitle(Component.literal((here ? "[TPAHERE]" : "[TPA]") + fromPlayer.getName()));
 
             this.setSlot(0,
                     new GuiElementBuilder(Items.RED_CONCRETE)
-                            .setName(Component.literal("No"))
+                            .setName(getTranslatedText("gui.geyser_tpc.tpa.tpareqdialog.deny", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();
                                 try {
@@ -617,7 +620,7 @@ public class tpa {
 
             this.setSlot(1,
                     new GuiElementBuilder(Items.ARROW)
-                            .setName(Component.literal("Back"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.back", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -629,23 +632,21 @@ public class tpa {
 
             this.setSlot(3,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Close"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();
                             })
             );
             this.setSlot(4,
                     new GuiElementBuilder(Items.LIME_CONCRETE)
-                            .setName(Component.literal("Yes"))
+                            .setName(getTranslatedText("gui.geyser_tpc.tpa.tpareqdialog.accept", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();
-
                                 try {
                                     tpaAccept(player, fromPlayer); // 这里的formPlayer是请求来源
 
                                 } catch (Exception e) {
                                     Constants.LOGGER.error("Error while accepting a tpa{} request! => ", here ? "here" : "", e);
-                                    return;
                                 }
                             })
             );

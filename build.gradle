@@ -33,6 +33,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     compileOnly "org.geysermc.geyser:api:${geyser_api_version}"
+    compileOnly("org.geysermc.floodgate:api:${floodgate_api_version}")
     implementation include("eu.pb4:sgui:${sgui_version}")
 }
 
@@ -44,8 +45,6 @@ processResources {
 				"minecraft_version": project.minecraft_version,
 				"java_version": project.java_version,
 				"fabric_api_version": project.fabric_api_version,
-				"geyser_mod_version": project.geyser_mod_version,
-
         )
     }
 }
@@ -66,6 +65,10 @@ jar {
     from("LICENSE") {
         rename { "${it}_$projectName" }
     }
+}
+
+tasks.jar {
+    archiveFileName.set("${project.name}-fabric-${mod_version}+mc${minecraft_version}.jar")
 }
 
 publishing {

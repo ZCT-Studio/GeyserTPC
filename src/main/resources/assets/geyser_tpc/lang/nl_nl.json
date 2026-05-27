@@ -1,4 +1,31 @@
 {
+  "mod.geyser_tpc.dependencies.floodgate.noload": "Floodgate is niet geïnstalleerd op de server. Sommige Bedrock-functies werken mogelijk niet goed",
+
+  "key.category.minecraft.geyser_tpc": "GeyserTPC",
+  "geyser_tpc.key.gtpa": "Open de TPA-grafische interface",
+
+  "gui.geyser_tpc.universal.gui.close": "Sluiten",
+  "gui.geyser_tpc.universal.gui.cancel": "Annuleren",
+  "gui.geyser_tpc.universal.gui.yes": "Bevestigen",
+  "gui.geyser_tpc.universal.gui.save": "Opslaan",
+  "gui.geyser_tpc.universal.gui.back": "Terug",
+  "gui.geyser_tpc.universal.gui.del": "Verwijderen",
+  "gui.geyser_tpc.universal.gui.tp": "Teleporteer",
+  "gui.geyser_tpc.universal.gui.rename": "Hernoemen",
+  "gui.geyser_tpc.universal.gui.pgup": "Vorige pagina",
+  "gui.geyser_tpc.universal.gui.pgdn": "Volgende pagina",
+
+  "gui.geyser_tpc.home.homegui.title": "Menu \"Home\"",
+  "gui.geyser_tpc.home.homegui.defaulthome": "Standaard home",
+  "gui.geyser_tpc.home.homeactiongui.defaulthome": "Instellen als standaard",
+
+  "gui.geyser_tpc.tpa.tpagui.title": "Menu \"Tpa\"",
+  "gui.geyser_tpc.tpa.tpagui.denyall": "Alles weigeren",
+  "gui.geyser_tpc.tpa.tpareqdialog.deny": "Weigeren",
+  "gui.geyser_tpc.tpa.tpareqdialog.accept": "Accepteren",
+
+  "gui.geyser_tpc.warp.warpgui.title": "Menu \"Warp\"",
+
   "commands.geyser_tpc.back.go": "Terug gaan",
   "commands.geyser_tpc.back.same": "Al Terug",
 
@@ -45,6 +72,7 @@
   "commands.geyser_tpc.tpa.alreadySent": "Er is al een verzoek verzonden naar %0%",
   "commands.geyser_tpc.tpa.received": "Tpa%0% verzoek ontvangen van %1%",
   "commands.geyser_tpc.tpa.sent": "Tpa%0% verzoek verzonden naar %1%",
+  "commands.geyser_tpc.tpa.be.prompt": "Je kunt het commando /gtpa gebruiken om te bekijken",
   "commands.geyser_tpc.tpa.accept": "[Accepteren]",
   "commands.geyser_tpc.tpa.deny": "[Weigeren]",
   "commands.geyser_tpc.tpa.expired": "Tpa%0% verzoek verlopen",
@@ -62,6 +90,7 @@
   "commands.geyser_tpc.common.delete": "[Verwijderen]",
   "commands.geyser_tpc.common.default": "(Standaard)",
   "commands.geyser_tpc.common.defaultPrompt": "[Standaard instellen]",
+  "commands.geyser_tpc.common.be.prompt": "GUI kan gebruikt worden om commando's te beheren",
   "commands.geyser_tpc.common.noLocation": "Geen locatie gevonden!",
   "commands.geyser_tpc.common.hoverCopy": "Klik om te kopiëren!",
   "commands.geyser_tpc.common.worldNotFound": "Wereld niet gevonden!",

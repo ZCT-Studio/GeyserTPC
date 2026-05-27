@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.wjiangzhi.geyser_tpc.Constants;
+import io.github.wjiangzhi.geyser_tpc.GeyserTPC;
 import io.github.wjiangzhi.geyser_tpc.common.NamedLocation;
 import io.github.wjiangzhi.geyser_tpc.common.Player;
 import io.github.wjiangzhi.geyser_tpc.suggestions.WarpSuggestionProvider;
@@ -25,6 +26,7 @@ import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.geyser.api.GeyserApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,96 +39,96 @@ import static net.minecraft.commands.Commands.argument;
 
 public class warp {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
+        if (!GeyserTPC.TELEPORT_COMMANDS_LOADED) {
+            commandDispatcher.register(Commands.literal("setwarp")
+                    .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
+                    .then(argument("name", StringArgumentType.string())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("setwarp")
-                .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
-                .then(argument("name", StringArgumentType.string())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    SetWarp(player, name);
 
-                            try {
-                                SetWarp(player, name);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while setting the warp!", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while setting the warp!", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.setError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("warp")
+                    .then(argument("name", StringArgumentType.string())
+                            .suggests(new WarpSuggestionProvider())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("warp")
-                .then(argument("name", StringArgumentType.string())
-                        .suggests(new WarpSuggestionProvider())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    GoToWarp(player, name);
 
-                            try {
-                                GoToWarp(player, name);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while going to the warp!", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while going to the warp!", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.goError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("delwarp")
+                    .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
+                    .then(argument("name", StringArgumentType.string()).suggests(new WarpSuggestionProvider())
+                            .executes(context -> {
+                                final String name = StringArgumentType.getString(context, "name");
+                                final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("delwarp")
-                .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
-                .then(argument("name", StringArgumentType.string()).suggests(new WarpSuggestionProvider())
-                        .executes(context -> {
-                            final String name = StringArgumentType.getString(context, "name");
-                            final ServerPlayer player = context.getSource().getPlayerOrException();
+                                try {
+                                    DeleteWarp(player, name);
 
-                            try {
-                                DeleteWarp(player, name);
+                                } catch (Exception e) {
+                                    Constants.LOGGER.error("Error while deleting to the warp!", e);
+                                    player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.deleteError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                    return 1;
+                                }
+                                return 0;
+                            })));
 
-                            } catch (Exception e) {
-                                Constants.LOGGER.error("Error while deleting to the warp!", e);
-                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.deleteError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                return 1;
-                            }
-                            return 0;
-                        })));
+            commandDispatcher.register(Commands.literal("renamewarp")
+                    .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
+                    .then(argument("name", StringArgumentType.string()).suggests(new WarpSuggestionProvider())
+                            .then(argument("newName", StringArgumentType.string())
+                                    .executes(context -> {
+                                        final String name = StringArgumentType.getString(context, "name");
+                                        final String newName = StringArgumentType.getString(context, "newName");
+                                        final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("renamewarp")
-                .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS)))
-                .then(argument("name", StringArgumentType.string()).suggests(new WarpSuggestionProvider())
-                        .then(argument("newName", StringArgumentType.string())
-                                .executes(context -> {
-                                    final String name = StringArgumentType.getString(context, "name");
-                                    final String newName = StringArgumentType.getString(context, "newName");
-                                    final ServerPlayer player = context.getSource().getPlayerOrException();
+                                        try {
+                                            RenameWarp(player, name, newName);
 
-                                    try {
-                                        RenameWarp(player, name, newName);
+                                        } catch (Exception e) {
+                                            Constants.LOGGER.error("Error while renaming the warp!", e);
+                                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.renameError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                            return 1;
+                                        }
+                                        return 0;
+                                    }))));
 
-                                    } catch (Exception e) {
-                                        Constants.LOGGER.error("Error while renaming the warp!", e);
-                                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.renameError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                                        return 1;
-                                    }
-                                    return 0;
-                                }))));
+            commandDispatcher.register(Commands.literal("warps")
+                    .executes(context -> {
+                        final ServerPlayer player = context.getSource().getPlayerOrException();
 
-        commandDispatcher.register(Commands.literal("warps")
-                .executes(context -> {
-                    final ServerPlayer player = context.getSource().getPlayerOrException();
+                        try {
+                            PrintWarps(player);
 
-                    try {
-                        PrintWarps(player);
-
-                    } catch (Exception e) {
-                        Constants.LOGGER.error("Error while printing warps!", e);
-                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warps.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                        return 1;
-                    }
-                    return 0;
-                }));
-
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Error while printing warps!", e);
+                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warps.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                            return 1;
+                        }
+                        return 0;
+                    }));
+        }
         commandDispatcher.register(Commands.literal("gwarp")
                 .executes(context -> {
                     final ServerPlayer player = context.getSource().getPlayerOrException();
@@ -371,45 +373,50 @@ public class warp {
             // linebreak
             message.append("\n");
 
-            // Teleport button
-            message.append(Component.literal("     | ").withStyle(ChatFormatting.AQUA))
-                    .append(getTranslatedText("commands.geyser_tpc.common.tp", player)
-                            .withStyle(ChatFormatting.GREEN)
-                            .withStyle(style ->
-                                    style.withClickEvent(
-                                            new ClickEvent.RunCommand(
-                                                    String.format("/warp \"%s\"", currentWarp.getName())
-                                            )
-                                    )
-                            )
-                    )
-                    .append(" ");
-
-            // Rename and delete buttons if admin
-            if (canModify) {
-                message.append(getTranslatedText("commands.geyser_tpc.common.rename", player)
-                                .withStyle(ChatFormatting.BLUE)
-                                .withStyle(style -> style
-                                        .withClickEvent(
-                                                new ClickEvent.SuggestCommand(
-                                                        String.format("/renamewarp \"%s\" ", currentWarp.getName())
+            //noinspection ConstantValue
+            if (GeyserApi.api() != null && GeyserApi.api().connectionByUuid(player.getUUID()) != null) {
+                message.append(getTranslatedText("commands.geyser_tpc.common.be.prompt", player))
+                        .append(Component.literal(" /gwarp"));
+            } else {
+                // Teleport button
+                message.append(Component.literal("     | ").withStyle(ChatFormatting.AQUA))
+                        .append(getTranslatedText("commands.geyser_tpc.common.tp", player)
+                                .withStyle(ChatFormatting.GREEN)
+                                .withStyle(style ->
+                                        style.withClickEvent(
+                                                new ClickEvent.RunCommand(
+                                                        String.format("/warp \"%s\"", currentWarp.getName())
                                                 )
                                         )
                                 )
                         )
-                        .append(" ")
-                        .append(getTranslatedText("commands.geyser_tpc.common.delete", player)
-                                .withStyle(ChatFormatting.RED)
-                                .withStyle(style -> style
-                                        .withClickEvent(
-                                                new ClickEvent.SuggestCommand(
-                                                        String.format("/delwarp \"%s\"", currentWarp.getName())
-                                                )
-                                        )
-                                )
-                        );
-            }
+                        .append(" ");
 
+                // Rename and delete buttons if admin
+                if (canModify) {
+                    message.append(getTranslatedText("commands.geyser_tpc.common.rename", player)
+                                    .withStyle(ChatFormatting.BLUE)
+                                    .withStyle(style -> style
+                                            .withClickEvent(
+                                                    new ClickEvent.SuggestCommand(
+                                                            String.format("/renamewarp \"%s\" ", currentWarp.getName())
+                                                    )
+                                            )
+                                    )
+                            )
+                            .append(" ")
+                            .append(getTranslatedText("commands.geyser_tpc.common.delete", player)
+                                    .withStyle(ChatFormatting.RED)
+                                    .withStyle(style -> style
+                                            .withClickEvent(
+                                                    new ClickEvent.SuggestCommand(
+                                                            String.format("/delwarp \"%s\"", currentWarp.getName())
+                                                    )
+                                            )
+                                    )
+                            );
+                }
+            }
             // linebreak
             message.append("\n");
         }
@@ -427,7 +434,7 @@ public class warp {
         public WarpGUI(ServerPlayer player) {
             super(MenuType.GENERIC_9x3, player, false);
 
-            setTitle(Component.literal("Warps GUI"));
+            setTitle(getTranslatedText("gui.geyser_tpc.warp.warpgui.title", player));
             loadWarps();
             init();
         }
@@ -482,7 +489,7 @@ public class warp {
                 slot++;
             }
 
-            for (int i = 18; i < 27; i++) {
+            for (int i = 18; i <= 23; i++) {
                 this.setSlot(i,
                         new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
                                 .setName(Component.empty())
@@ -491,14 +498,14 @@ public class warp {
 
             this.setSlot(24,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("X"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
                             .setCallback((i, t, a, g) -> g.close())
             );
 
             this.setSlot(25,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                             .setProfileSkinTexture(Constants.GUI.ARROW_LEFT)
-                            .setName(Component.literal("<"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player))
                             .setCallback((i, t, a, g) -> {
                                 if (page > 0) page--;
                                 init();
@@ -507,7 +514,7 @@ public class warp {
 
             this.setSlot(26,
                     new GuiElementBuilder(Items.PLAYER_HEAD)
-                            .setName(Component.literal(">"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player))
                             .setProfileSkinTexture(Constants.GUI.ARROW_RIGHT)
                             .setCallback((i, t, a, g) -> {
                                 if ((page + 1) * PAGE_SIZE < warps.size()) {
@@ -544,7 +551,7 @@ public class warp {
             setTitle(Component.literal(warp.getName()));
             this.setSlot(0,
                     new GuiElementBuilder(Items.ENDER_PEARL)
-                            .setName(Component.literal("Teleport"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.tp", player))
                             .setCallback((i, t, a, g) -> {
                                 try {
                                     GoToWarp(player, warp.getName());
@@ -559,7 +566,7 @@ public class warp {
 
                 this.setSlot(1,
                         new GuiElementBuilder(Items.TNT)
-                                .setName(Component.literal("Delete"))
+                                .setName(getTranslatedText("gui.geyser_tpc.universal.gui.del", player))
                                 .setCallback((i, t, a, g) -> {
                                     new WarpDeleteGUI(player, warp, this).open();
                                     g.close();
@@ -568,7 +575,7 @@ public class warp {
 
                 this.setSlot(2,
                         new GuiElementBuilder(Items.NAME_TAG)
-                                .setName(Component.literal("Rename"))
+                                .setName(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player))
                                 .setCallback((i, t, a, g) -> {
                                     new WarpRenameGUI(player, warp, this).open();
                                     g.close();
@@ -578,7 +585,7 @@ public class warp {
 
             this.setSlot(3,
                     new GuiElementBuilder(Items.ARROW)
-                            .setName(Component.literal("Back"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.back", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -590,7 +597,7 @@ public class warp {
 
             this.setSlot(4,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Close"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.close", player))
                             .setCallback((i, t, a, g) -> g.close())
             );
         }
@@ -607,11 +614,11 @@ public class warp {
             this.warp = warp;
             this.parent = parent;
 
-            setTitle(Component.literal("Delete warp(" + warp.getName() + ")?"));
+            setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).append(" Warp \"" + warp.getName() + "\""));
 
             this.setSlot(0,
                     new GuiElementBuilder(Items.RED_CONCRETE)
-                            .setName(Component.literal("No"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -623,7 +630,7 @@ public class warp {
 
             this.setSlot(4,
                     new GuiElementBuilder(Items.LIME_CONCRETE)
-                            .setName(Component.literal("Yes"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.yes", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
 
@@ -659,7 +666,7 @@ public class warp {
 
             setDefaultInputValue(warp.getName());
 
-            setTitle(Component.literal("Rename" + " \"" + warp.getName() + "\""));
+            setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).append(" Warp \"" + warp.getName() + "\""));
 
             this.setSlot(0,
                     new GuiElementBuilder(Items.AMETHYST_SHARD).setName(Component.literal(warp.getName()))
@@ -667,7 +674,7 @@ public class warp {
 
             this.setSlot(1,
                     new GuiElementBuilder(Items.BARRIER)
-                            .setName(Component.literal("Cancel"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
                                 if (parent != null) {
@@ -678,7 +685,7 @@ public class warp {
 
             this.setSlot(2,
                     new GuiElementBuilder(Items.ANVIL)
-                            .setName(Component.literal("Rename"))
+                            .setName(getTranslatedText("gui.geyser_tpc.universal.gui.save", player))
                             .setCallback((i, t, a, g) -> {
                                 String input = getInput();
 

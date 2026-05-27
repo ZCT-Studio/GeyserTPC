@@ -1,4 +1,31 @@
 {
+  "mod.geyser_tpc.dependencies.floodgate.noload": "未安裝 Floodgate，基岩版部分功能可能無法正常運作",
+
+  "key.category.minecraft.geyser_tpc": "GeyserTPC",
+  "geyser_tpc.key.gtpa": "打開Tpa圖形介面",
+
+  "gui.geyser_tpc.universal.gui.close": "關閉",
+  "gui.geyser_tpc.universal.gui.cancel": "取消",
+  "gui.geyser_tpc.universal.gui.yes": "確定",
+  "gui.geyser_tpc.universal.gui.save": "儲存",
+  "gui.geyser_tpc.universal.gui.back": "返回",
+  "gui.geyser_tpc.universal.gui.del": "刪除",
+  "gui.geyser_tpc.universal.gui.tp": "傳送",
+  "gui.geyser_tpc.universal.gui.rename": "重新命名",
+  "gui.geyser_tpc.universal.gui.pgup": "上一頁",
+  "gui.geyser_tpc.universal.gui.pgdn": "下一頁",
+
+  "gui.geyser_tpc.home.homegui.title": "「Home」介面",
+  "gui.geyser_tpc.home.homegui.defaulthome": "預設家",
+  "gui.geyser_tpc.home.homeactiongui.defaulthome": "設為預設",
+
+  "gui.geyser_tpc.tpa.tpagui.title": "「tpa」介面",
+  "gui.geyser_tpc.tpa.tpagui.denyall": "全部拒絕",
+  "gui.geyser_tpc.tpa.tpareqdialog.deny": "拒絕",
+  "gui.geyser_tpc.tpa.tpareqdialog.accept": "接受",
+
+  "gui.geyser_tpc.warp.warpgui.title": "「Warp」介面",
+
   "commands.geyser_tpc.back.go": "正在返回上一地點",
   "commands.geyser_tpc.back.same": "已成功返回上一地點",
 
@@ -45,6 +72,7 @@
   "commands.geyser_tpc.tpa.alreadySent": "已向 %0% 送出傳送請求",
   "commands.geyser_tpc.tpa.received": "收到來自 %1% 的 Tpa%0% 請求",
   "commands.geyser_tpc.tpa.sent": "已向 %1% 送出 Tpa%0% 請求",
+  "commands.geyser_tpc.tpa.be.prompt": "你可使用 /gtpa 指令來查看",
   "commands.geyser_tpc.tpa.accept": "[接受]",
   "commands.geyser_tpc.tpa.deny": "[拒絕]",
   "commands.geyser_tpc.tpa.expired": "Tpa%0% 請求已過期",
@@ -62,6 +90,7 @@
   "commands.geyser_tpc.common.delete": "[刪除]",
   "commands.geyser_tpc.common.default": "（預設）",
   "commands.geyser_tpc.common.defaultPrompt": "[設為預設]",
+  "commands.geyser_tpc.common.be.prompt": "可使用 GUI 管理指令",
   "commands.geyser_tpc.common.noLocation": "找不到地點！",
   "commands.geyser_tpc.common.hoverCopy": "點擊即可複製！",
   "commands.geyser_tpc.common.worldNotFound": "找不到此世界！",
