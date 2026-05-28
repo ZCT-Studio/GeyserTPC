@@ -108,10 +108,10 @@ public class back {
                         FloodgateApi.getInstance().sendForm(
                                 player.getUUID(),
                                 ModalForm.builder()
-                                        .title(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player).toString())
-                                        .content(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player).toString())
-                                        .button1(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player).toString())
-                                        .button2(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).toString())
+                                        .title(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player).getString())
+                                        .content(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player).getString())
+                                        .button1(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player).getString())
+                                        .button2(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString())
 
                                         .validResultHandler(response -> {
                                             if (response.clickedFirst()) {
