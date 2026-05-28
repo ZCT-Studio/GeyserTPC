@@ -4,9 +4,9 @@
 
 ---
 
-> A teleportation utility mod for Geyser-Fabric servers, built on top of [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands).
+> A teleportation utility mod for Geyser-Fabric servers, built on top of [TeleportCommands](https://modrinth.com/mod/teleport-commands).
 >
-> Looking for the non-Geyser or NeoForge version? [View original project](https://github.com/MrSn0wy/TeleportCommands)
+> Looking for the non-Geyser or NeoForge version? [View original project](https://modrinth.com/mod/teleport-commands)
 >
 > This mod introduces command-based and GUI-based teleportation systems (e.g. `/gtpa`) optimized for cross-platform gameplay, with enhanced usability for Bedrock Edition players.
 
@@ -115,9 +115,9 @@ Warps are server-wide teleport points managed by administrators.
 
 ## Credits
 
-Special thanks to the original author [Mr.Sn0wy](https://github.com/MrSn0w).
+Special thanks to the original author [MrSnowy](https://modrinth.com/user/MrSnowy).
 
-This project is heavily inspired by [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands), which provided the foundation for this fork.
+This project is heavily inspired by [TeleportCommands](https://modrinth.com/mod/teleport-commands), which provided the foundation for this fork.
 
 ---
 
