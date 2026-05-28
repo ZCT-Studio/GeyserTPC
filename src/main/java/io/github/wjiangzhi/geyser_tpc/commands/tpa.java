@@ -697,7 +697,7 @@ public class tpa {
                             .getPlayer(UUID.fromString(tpaRequest.InitPlayer));
                     if (fromPlayer == null) return;
                     form_builder.button(
-                            (tpaRequest.here ? "[TPAHERE]" : "[TPA]") + tpaRequest.InitPlayer,
+                            (tpaRequest.here ? "[TPAHERE]" : "[TPA]") + fromPlayer.getName().getString(),
                             FormImage.of(FormImage.Type.PATH, tpaRequest.here ? Constants.GUI.BE.ENDER_EYE : Constants.GUI.BE.ENDER_PEARL)
                     );
 
