@@ -2,6 +2,10 @@
 
 ---
 
+### 🌏 [ English | [简体中文](README/zh-Hans.md) | [繁體中文](README/zh-Hant.md) ]
+
+---
+
 > A teleportation mod for Geyser-Fabric servers, based on [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands)
 >
 > Looking for the non-Geyser or NeoForge version? [Check it out here~](https://github.com/MrSn0wy/TeleportCommands)
@@ -10,10 +14,12 @@
 
 > [!WARNING]
 > The BE UI of this mod relies on the Floodgate Mod.
+> 
 > If the server has not installed Floodgate, the BE cannot open the GUI.
 
 > [!NOTE]
 > It is still useful when installed on the client side.  
+> 
 > After the server and client installs this mod, pressing the `\` key will quickly open the `/gtpa` GUI.
 
 ---
@@ -27,9 +33,8 @@
 - `/back [<disable safety check>]`  
   Teleports you to your last death location.  
   If `true` is provided, safety checks will be skipped.
-<br><br>
-**"Homes" are private player locations that only the owner can access.**
 
+**"Homes" are private player locations that only the owner can access.**
 - `/sethome <name>`  
   Creates a new home.
 
@@ -51,9 +56,8 @@
 
 - `/defaulthome <name>`  
   Sets the default home.
-<br><br>
-**"Warps" are public locations managed by administrators and available to all players.**
 
+**"Warps" are public locations managed by administrators and available to all players.**
 - `/warp <name>`  
   Teleports you to a warp point.
   
@@ -71,9 +75,8 @@
 
 - `/renamewarp <name> <new_name>`  
   Renames a warp point. Requires permission level 4 (operator).
-<br><br>
-**Using "TPA", you can teleport to other players or request them to teleport to you.**
 
+**Using "TPA", you can teleport to other players or request them to teleport to you.**
 - `/tpa <player>`  
   Sends a teleport request to another player.
 
@@ -88,7 +91,6 @@
 
 - `/tpadeny <player>`  
   Denies a player's tpa/tpahere request.
-<br>
 
 ---
 
