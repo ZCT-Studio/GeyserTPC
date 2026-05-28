@@ -16,8 +16,6 @@
 > If the server has not installed Floodgate, the BE cannot open the GUI.
 
 > [!NOTE]
-> It is still useful when installed on the client side.  
-> 
 > After the server and client installs this mod, pressing the `\` key will quickly open the `/gtpa` GUI.
 
 ---
