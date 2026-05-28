@@ -25,11 +25,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.cumulus.form.CustomForm;
+import org.geysermc.cumulus.form.SimpleForm;
+import org.geysermc.cumulus.util.FormImage;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.api.GeyserApi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static io.github.wjiangzhi.geyser_tpc.storage.StorageManager.STORAGE;
 import static io.github.wjiangzhi.geyser_tpc.utils.tools.Teleporter;
@@ -172,13 +174,17 @@ public class home {
                     }
 
                     try {
-                        new HomeGUI(player).open();
-
+                        if (tools.isBEPlayer(player)) {
+                            new BE.HomeGUI(player);
+                        } else {
+                            new HomeGUI(player).open();
+                        }
                     } catch (Exception e) {
                         Constants.LOGGER.error("Error while opening the home gui! => ", e);
                         player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.homes.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
                         return 1;
                     }
+
                     return 0;
                 }).then(argument("name", StringArgumentType.string())
                         .suggests(new HomeSuggestionProvider())
@@ -202,8 +208,11 @@ public class home {
                                     return 1;
                                 }
 
-                                new HomeActionGUI(player, playerStorage.getHome(lowerCaseName).get(), null).open();
-
+                                if (tools.isBEPlayer(player)) {
+                                    new BE.HomeActionGUI(player, playerStorage.getHome(lowerCaseName).get());
+                                } else {
+                                    new HomeActionGUI(player, playerStorage.getHome(lowerCaseName).get(), null).open();
+                                }
                             } catch (Exception e) {
                                 Constants.LOGGER.error("Error while openning home gui => ", e);
                                 player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.homes.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
@@ -902,6 +911,301 @@ public class home {
                                 }
                             })
             );
+        }
+    }
+
+    public static class BE {
+        public static class HomeGUI {
+            private static final int PAGE_SIZE = 5;
+            public List<NamedLocation> homes = new ArrayList<>();
+            public ServerPlayer player;
+            private final int page;
+
+            public HomeGUI(ServerPlayer player, int page) {
+                this.player = player;
+                this.page = page;
+                init();
+            }
+
+            public HomeGUI(ServerPlayer player) {
+                this.player = player;
+                this.page = 0;
+                init();
+            }
+
+            private int maxPage() {
+                return (homes.size() - 1) / PAGE_SIZE;
+            }
+
+            private void init() {
+                Optional<Player> optionalPlayerStorage = STORAGE.getPlayer(player.getStringUUID());
+                if (optionalPlayerStorage.isEmpty()) {
+                    player.sendSystemMessage(
+                            getTranslatedText("commands.geyser_tpc.home.homeless", player)
+                                    .withStyle(ChatFormatting.AQUA),
+                            true
+                    );
+                    return;
+                }
+
+                Player playerStorage = optionalPlayerStorage.get();
+
+                homes = playerStorage.getHomes();
+
+                if (homes == null) homes = new ArrayList<>();
+
+                if (homes.isEmpty()) {
+                    player.sendSystemMessage(
+                            getTranslatedText("commands.geyser_tpc.home.homeless", player)
+                                    .withStyle(ChatFormatting.AQUA),
+                            true
+                    );
+                    return;
+                }
+
+                int start = page * PAGE_SIZE;
+                int end = Math.min(start + PAGE_SIZE, homes.size());
+                int onum = 0;
+
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.home.homegui.title", player).getString());
+
+                form_builder.button(
+                        "TODO",
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.SEARCH)
+                ); // 搜索
+
+                for (int idx = start; idx < end; idx++) {
+                    NamedLocation home = homes.get(idx);
+
+                    if (playerStorage.getHome(home.getName().toLowerCase()).isEmpty()) {
+                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.notFound", player).withStyle(ChatFormatting.RED), true);
+                        continue;
+                    }
+
+                    boolean isDefault = playerStorage.getDefaultHome().equals(home.getName().toLowerCase());
+
+                    form_builder.button(
+                            home.getName() + (isDefault ? ("[" + getTranslatedText("gui.geyser_tpc.home.homegui.defaulthome", player).getString() + "]") : ""),
+                            FormImage.of(FormImage.Type.PATH, isDefault ? Constants.GUI.BE.NETHER_STAR : Constants.GUI.BE.RED_BED)
+                    ); // 家
+                    onum++;
+                }
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ARROW_LEFT)
+                ); // 上一页
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ARROW_RIGHT)
+                ); // 下一页
+
+                final int finalOnum = onum;
+
+                form_builder.validResultHandler(res -> {
+                    /*
+                     * 0 -> 搜索
+                     * 1based page -> Homes
+                     * finalOnum + 1 -> 上一页
+                     * finalOnum + 2 -> 下一页
+                     */
+                    int id = res.clickedButtonId();
+
+                    if (id == 0) { // 搜索
+                        // TODO 搜索
+                    } else if (id >= 1 && id <= finalOnum) {
+                        int index = start + (id - 1);
+                        new HomeActionGUI(player, homes.get(index));
+                    } else if (id == finalOnum + 1) { // 上一页
+                        int newPage = page;
+                        if (page > 0) {
+                            newPage--;
+                        } else {
+                            newPage = maxPage();
+                        }
+                        new HomeGUI(player, newPage);
+                    } else if (id == finalOnum + 2) { // 下一页
+                        int newPage = page;
+                        if (page < maxPage()) {
+                            newPage++;
+                        } else {
+                            newPage = 0;
+                        }
+                        new HomeGUI(player, newPage);
+                    } else {
+                        return;
+                    }
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class HomeActionGUI {
+            public HomeActionGUI(ServerPlayer player, NamedLocation home) {
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(home.getName());
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.tp", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ENDER_PEARL)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.DELETE)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.NAME_TAG)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.home.homeactiongui.defaulthome", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.NETHER_STAR)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.back", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.BACK)
+                );
+
+                form_builder.validResultHandler(res -> {
+                    int id = res.clickedButtonId();
+
+                    switch (id) {
+                        case 0: {
+                            try {
+                                GoHome(player, home.getName());
+                            } catch (Exception e) {
+                                Constants.LOGGER.error("Teleport error", e);
+                            }
+                        }
+                        break;
+                        case 1: {
+                            new HomeDeleteGUI(player, home);
+                        }
+                        break;
+                        case 2: {
+                            new HomeRenameGUI(player, home);
+                        }
+                        break;
+                        case 3: {
+                            try {
+                                SetDefaultHome(player, home.getName());
+
+                            } catch (Exception e) {
+                                Constants.LOGGER.error("Error while setting the default home! => ", e);
+                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.defaultError", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                return;
+                            }
+                            new HomeGUI(player);
+                        }
+                        break;
+                        case 4: {
+                            new HomeGUI(player);
+                        }
+                        break;
+                        default: {
+                            return;
+                        }
+                    }
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class HomeDeleteGUI {
+            public HomeDeleteGUI(ServerPlayer player, NamedLocation home) {
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString() + " Home?");
+
+                form_builder.content(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString() + " Home \"" + home.getName() + "\"?");
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.CANCEL)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.yes", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.YES)
+                );
+
+                form_builder.validResultHandler(res -> {
+                    int id = res.clickedButtonId();
+
+                    switch (id) {
+                        case 0: {
+                            new HomeActionGUI(player, home);
+                        }
+                        break;
+                        case 1: {
+                            try {
+                                DeleteHome(player, home.getName());
+
+                            } catch (Exception e) {
+                                Constants.LOGGER.error("Error while deleting a home! => ", e);
+                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.deleteError", player)
+                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                return;
+                            }
+
+                            new HomeGUI(player);
+                        }
+                        break;
+                        default: {
+                            return;
+                        }
+                    }
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class HomeRenameGUI {
+            public HomeRenameGUI(ServerPlayer player, NamedLocation home) {
+                var form_builder =  CustomForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).getString() + " Home \"" + home.getName() + "\"");
+
+                form_builder.input("", home.getName(), home.getName());
+
+                form_builder.toggle(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString());
+
+                form_builder.validResultHandler(res -> {
+                    boolean cancel = res.asToggle(1);
+                    if (cancel) {
+                        new HomeActionGUI(player, home);
+                        return;
+                    }
+                    String input = res.asInput(0);
+
+                    if (input != null && !input.isBlank()) {
+                        try {
+                            RenameHome(player, home.getName(), input);
+
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Error while renaming a home! => ", e);
+                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.home.renameError", player)
+                                    .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                            return;
+                        }
+                    }
+
+                    new HomeActionGUI(player, home);
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
         }
     }
 }

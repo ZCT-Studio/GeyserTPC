@@ -3,7 +3,7 @@
 	"id": "geyser_tpc",
 	"version": "${version}",
 	"name": "GeyserTPC",
-	"description": "A teleportation mod for Geyser-Fabric servers developed based on TeleportCommands",
+	"description": "A teleportation mod for Geyser-Fabric servers, based on TeleportCommands",
 	"authors": [
 		"WJiangzhi"
 	],

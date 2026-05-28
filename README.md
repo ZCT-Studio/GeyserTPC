@@ -92,8 +92,7 @@
 
 ### TODO
 
-- [ ] Better Bedrock Edition UI support
-- [x] Hide clickable chat commands from Bedrock Edition players
+- [ ] Search in BE UI
 
 ---
 

@@ -109,8 +109,7 @@ Warps are server-wide teleport points managed by administrators.
 
 ## TODO
 
-- [ ] Improve Bedrock Edition GUI compatibility
-- [x] Hide clickable chat commands for Bedrock Edition players
+- [ ] Search in BE UI
 
 ---
 

@@ -13,5 +13,22 @@ public class Constants {
     public static class GUI {
         public static final String ARROW_LEFT = "ewogICJ0aW1lc3RhbXAiIDogMTU5Mzk3NTc5NDQ3NCwKICAicHJvZmlsZUlkIiA6ICJhNjhmMGI2NDhkMTQ0MDAwYTk1ZjRiOWJhMTRmOGRmOSIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dMZWZ0IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Y3YWFjYWQxOTNlMjIyNjk3MWVkOTUzMDJkYmE0MzM0MzhiZTQ2NDRmYmFiNWViZjgxODA1NDA2MTY2N2ZiZTIiCiAgICB9CiAgfQp9";
         public static final String ARROW_RIGHT = "ewogICJ0aW1lc3RhbXAiIDogMTYwMDk5NjI3NjA3OSwKICAicHJvZmlsZUlkIiA6ICI1MGM4NTEwYjVlYTA0ZDYwYmU5YTdkNTQyZDZjZDE1NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfQXJyb3dSaWdodCIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9kMzRlZjA2Mzg1MzcyMjJiMjBmNDgwNjk0ZGFkYzBmODVmYmUwNzU5ZDU4MWFhN2ZjZGYyZTQzMTM5Mzc3MTU4IgogICAgfQogIH0KfQ==";
+
+        public static class BE {
+            public static final String SEARCH = "textures/ui/magnifyingGlass.png";
+            public static final String NETHER_STAR = "textures/items/nether_star.png";
+            public static final String RED_BED = "textures/items/bed_red.png";
+            public static final String AMETHYST_SHARD = "textures/items/amethyst_shard.png";
+            public static final String NAME_TAG = "textures/items/name_tag.png";
+            public static final String ARROW_LEFT = "textures/ui/arrow_left.png";
+            public static final String ARROW_RIGHT = "textures/ui/arrow_right.png";
+            public static final String ENDER_PEARL = "textures/items/ender_pearl.png";
+            public static final String ENDER_EYE = "textures/items/ender_eye.png";
+            public static final String DELETE = "textures/ui/trash_default.png";
+            public static final String BACK = "textures/ui/undoArrow.png";
+            public static final String CANCEL = "textures/ui/crossout.png";
+            public static final String YES = "textures/ui/check.png";
+            public static final String NO = "textures/blocks/barrier";
+        }
     }
 }

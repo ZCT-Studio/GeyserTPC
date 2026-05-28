@@ -86,48 +86,44 @@ public class worldspawn {
                 }
 
             } else {
-                //noinspection ConstantValue
-                if (GeyserTPC.GEYSER_LOADED && GeyserApi.api() != null && GeyserApi.api().connectionByUuid(player.getUUID()) != null) {
-                    if (GeyserTPC.FLOODGATE_LOADED) {
-                        FloodgateApi.getInstance().sendForm(
-                                player.getUUID(),
-                                ModalForm.builder()
-                                        .title(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player).getString())
-                                        .content(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player).getString())
-                                        .button1(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player).getString())
-                                        .button2(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString())
+                if (canCallBEGUI(player)) {
+                    FloodgateApi.getInstance().sendForm(
+                            player.getUUID(),
+                            ModalForm.builder()
+                                    .title(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player).getString())
+                                    .content(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player).getString())
+                                    .button1(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player).getString())
+                                    .button2("[" + getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString() + "]")
 
-                                        .validResultHandler(response -> {
-                                            if (response.clickedFirst()) {
-                                                var dispatcher = GeyserTPC.SERVER.getCommands().getDispatcher();
-                                                try {
-                                                    dispatcher.execute(dispatcher.parse("worldspawn true", player.createCommandSourceStack()));
-                                                } catch (CommandSyntaxException _) {
-                                                }
-
+                                    .validResultHandler(response -> {
+                                        if (response.clickedFirst()) {
+                                            var dispatcher = GeyserTPC.SERVER.getCommands().getDispatcher();
+                                            try {
+                                                dispatcher.execute(dispatcher.parse("worldspawn true", player.createCommandSourceStack()));
+                                            } catch (CommandSyntaxException _) {
                                             }
-                                        })
-                        );
-                        return;
-                    } else {
-                        player.sendSystemMessage(getTranslatedText("mod.geyser_tpc.dependencies.floodgate.noload", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-                    }
+
+                                        }
+                                    })
+                    );
+                } else {
+                    player.sendSystemMessage(
+                            Component.empty()
+                                    .append(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player)
+                                            .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
+                                    )
+                                    .append("\n")
+                                    .append(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player)
+                                            .withStyle(ChatFormatting.WHITE)
+                                    )
+                                    .append("\n")
+                                    .append(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player)
+                                            .withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.BOLD)
+                                            .withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/back true")))
+                                    )
+                                    .append("\n"), false);
                 }
-                player.sendSystemMessage(
-                        Component.empty()
-                                .append(getTranslatedText("commands.geyser_tpc.common.noSafeLocation", player)
-                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
-                                )
-                                .append("\n")
-                                .append(getTranslatedText("commands.geyser_tpc.common.safetyIsForLosers", player)
-                                        .withStyle(ChatFormatting.WHITE)
-                                )
-                                .append("\n")
-                                .append(getTranslatedText("commands.geyser_tpc.common.forceTeleport", player)
-                                        .withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.BOLD)
-                                        .withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/back true")))
-                                )
-                                .append("\n"), false);
+                return;
             }
         } else {
             if (player.blockPosition().equals(worldSpawn) && player.level() == world) {

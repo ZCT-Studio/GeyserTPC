@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -20,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.geyser.api.GeyserApi;
 
 import static io.github.wjiangzhi.geyser_tpc.Constants.MOD_ID;
 import static net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT;
@@ -221,5 +223,20 @@ public class tools {
             return true; // it's safe
         }
         return false; // it's not safe!
+    }
+
+    public static boolean isBEPlayer(ServerPlayer player) {
+        return GeyserTPC.GEYSER_LOADED && GeyserApi.api() != null && GeyserApi.api().connectionByUuid(player.getUUID()) != null && GeyserTPC.FLOODGATE_LOADED;
+    }
+
+    public static boolean canCallBEGUI(ServerPlayer player) {
+        if (GeyserTPC.GEYSER_LOADED && GeyserApi.api() != null && GeyserApi.api().connectionByUuid(player.getUUID()) != null) {
+            if (!GeyserTPC.FLOODGATE_LOADED) {
+                player.sendSystemMessage(getTranslatedText("mod.geyser_tpc.dependencies.floodgate.noload", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

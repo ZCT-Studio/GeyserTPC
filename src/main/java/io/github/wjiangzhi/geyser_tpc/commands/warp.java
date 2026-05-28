@@ -26,6 +26,10 @@ import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import org.geysermc.cumulus.form.CustomForm;
+import org.geysermc.cumulus.form.SimpleForm;
+import org.geysermc.cumulus.util.FormImage;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.api.GeyserApi;
 
 import java.util.ArrayList;
@@ -133,16 +137,21 @@ public class warp {
                 .executes(context -> {
                     final ServerPlayer player = context.getSource().getPlayerOrException();
 
+                    if (STORAGE.getWarps().isEmpty()) {
+                        player.sendSystemMessage(
+                                getTranslatedText("commands.geyser_tpc.warp.homeless", player)
+                                        .withStyle(ChatFormatting.AQUA),
+                                true
+                        );
+                        return 1;
+                    }
+
                     try {
-                        if (STORAGE.getWarps().isEmpty()) {
-                            player.sendSystemMessage(
-                                    getTranslatedText("commands.geyser_tpc.warp.homeless", player)
-                                            .withStyle(ChatFormatting.AQUA),
-                                    true
-                            );
-                            return 1;
+                        if (tools.isBEPlayer(player)) {
+                            new BE.WarpGUI(player);
+                        } else {
+                            new WarpGUI(player).open();
                         }
-                        new WarpGUI(player).open();
                     } catch (Exception e) {
                         Constants.LOGGER.error("Error while opening the warp gui! => ", e);
                         player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warps.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
@@ -172,8 +181,11 @@ public class warp {
                                     return 1;
                                 }
 
-                                new WarpActionGUI(player, STORAGE.getWarp(lowerCaseName).get(), null).open();
-
+                                if (tools.isBEPlayer(player)) {
+                                    new BE.WarpActionGUI(player, STORAGE.getWarp(lowerCaseName).get());
+                                } else {
+                                    new WarpActionGUI(player, STORAGE.getWarp(lowerCaseName).get(), null).open();
+                                }
                             } catch (Exception e) {
                                 Constants.LOGGER.error("Error while openning warp gui => ", e);
                                 player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warps.error", player).withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
@@ -185,7 +197,6 @@ public class warp {
 
 
     private static void SetWarp(ServerPlayer player, String warpName) throws Exception {
-        System.out.println(warpName);
         warpName = warpName.toLowerCase();
 
         BlockPos blockPos = new BlockPos(player.getBlockX(), player.getBlockY(), player.getBlockZ());
@@ -708,6 +719,278 @@ public class warp {
                                 }
                             })
             );
+        }
+    }
+    public static class BE {
+        public static class WarpGUI {
+            private static final int PAGE_SIZE = 5;
+            public List<NamedLocation> warps = new ArrayList<>();
+            public ServerPlayer player;
+            private final int page;
+
+            public WarpGUI(ServerPlayer player, int page) {
+                this.player = player;
+                this.page = page;
+                init();
+            }
+
+            public WarpGUI(ServerPlayer player) {
+                this.player = player;
+                this.page = 0;
+                init();
+            }
+
+            private int maxPage() {
+                return (warps.size() - 1) / PAGE_SIZE;
+            }
+
+            private void init() {
+                warps = STORAGE.getWarps();
+
+                if (warps == null) warps = new ArrayList<>();
+
+                if (warps.isEmpty()) {
+                    player.sendSystemMessage(
+                            getTranslatedText("commands.geyser_tpc.warp.homeless", player)
+                                    .withStyle(ChatFormatting.AQUA),
+                            true
+                    );
+                    return;
+                }
+
+                int start = page * PAGE_SIZE;
+                int end = Math.min(start + PAGE_SIZE, warps.size());
+                int onum = 0;
+
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.warp.warpgui.title", player).getString());
+
+                form_builder.button(
+                        "TODO",
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.SEARCH)
+                ); // 搜索
+
+                for (int idx = start; idx < end; idx++) {
+                    NamedLocation warp = warps.get(idx);
+
+                    if (STORAGE.getWarp(warp.getName().toLowerCase()).isEmpty()) {
+                        player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.notFound", player).withStyle(ChatFormatting.RED), true);
+                        continue;
+                    }
+
+                    form_builder.button(
+                            warp.getName(),
+                            FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.AMETHYST_SHARD)
+                    ); // 传送点
+                    onum++;
+                }
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.pgup", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ARROW_LEFT)
+                ); // 上一页
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.pgdn", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ARROW_RIGHT)
+                ); // 下一页
+
+                final int finalOnum = onum;
+
+                form_builder.validResultHandler(res -> {
+                    /*
+                     * 0 -> 搜索
+                     * 1based page -> Warps
+                     * finalOnum + 1 -> 上一页
+                     * finalOnum + 2 -> 下一页
+                     */
+                    int id = res.clickedButtonId();
+
+                    if (id == 0) { // 搜索
+                        // TODO 搜索
+                    } else if (id >= 1 && id <= finalOnum) {
+                        int index = start + (id - 1);
+                        new WarpActionGUI(player, warps.get(index));
+                    } else if (id == finalOnum + 1) { // 上一页
+                        int newPage = page;
+                        if (page > 0) {
+                            newPage--;
+                        } else {
+                            newPage = maxPage();
+                        }
+                        new WarpGUI(player, newPage);
+                    } else if (id == finalOnum + 2) { // 下一页
+                        int newPage = page;
+                        if (page < maxPage()) {
+                            newPage++;
+                        } else {
+                            newPage = 0;
+                        }
+                        new WarpGUI(player, newPage);
+                    } else {
+                        return;
+                    }
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class WarpActionGUI {
+            public WarpActionGUI(ServerPlayer player, NamedLocation warp) {
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(warp.getName());
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.tp", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.ENDER_PEARL)
+                );
+
+                if (player.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS))) {
+                    form_builder.button(
+                            getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString(),
+                            FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.DELETE)
+                    );
+
+                    form_builder.button(
+                            getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).getString(),
+                            FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.NAME_TAG)
+                    );
+                }
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.back", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.BACK)
+                );
+
+                form_builder.validResultHandler(res -> {
+                    int id = res.clickedButtonId();
+
+                    if (id == 0) {
+                        try {
+                            GoToWarp(player, warp.getName());
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Teleport error", e);
+                        }
+                    }
+                    if (player.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS))) {
+                        switch (id) {
+                            case 0: break;
+                            case 1: {
+                                new WarpDeleteGUI(player, warp);
+                            }
+                            break;
+                            case 2: {
+                                new WarpRenameGUI(player, warp);
+                            }
+                            break;
+                            case 3: {
+                                new WarpGUI(player);
+                            }
+                            break;
+                            default: {
+                                return;
+                            }
+                        }
+                    } else {
+                        if (id == 1) {
+                            new WarpGUI(player);
+                        }
+                    }
+
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class WarpDeleteGUI {
+            public WarpDeleteGUI(ServerPlayer player, NamedLocation warp) {
+                var form_builder =  SimpleForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString() + " Warp?");
+
+                form_builder.content(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).getString() + " Warp \"" + warp.getName() + "\"?");
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.CANCEL)
+                );
+
+                form_builder.button(
+                        getTranslatedText("gui.geyser_tpc.universal.gui.yes", player).getString(),
+                        FormImage.of(FormImage.Type.PATH, Constants.GUI.BE.YES)
+                );
+
+                form_builder.validResultHandler(res -> {
+                    int id = res.clickedButtonId();
+
+                    switch (id) {
+                        case 0: {
+                            new WarpActionGUI(player, warp);
+                        }
+                        break;
+                        case 1: {
+                            try {
+                                DeleteWarp(player, warp.getName());
+
+                            } catch (Exception e) {
+                                Constants.LOGGER.error("Error while deleting a warp! => ", e);
+                                player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.deleteError", player)
+                                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                                return;
+                            }
+
+                            new WarpGUI(player);
+                        }
+                        break;
+                        default: {
+                            return;
+                        }
+                    }
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
+        }
+
+        public static class WarpRenameGUI {
+            public WarpRenameGUI(ServerPlayer player, NamedLocation warp) {
+                var form_builder =  CustomForm.builder();
+
+                form_builder.title(getTranslatedText("gui.geyser_tpc.universal.gui.rename", player).getString() + " Warp \"" + warp.getName() + "\"");
+
+                form_builder.input("", warp.getName(), warp.getName());
+
+                form_builder.toggle(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player).getString());
+
+                form_builder.validResultHandler(res -> {
+                    boolean cancel = res.asToggle(1);
+                    if (cancel) {
+                        new WarpActionGUI(player, warp);
+                        return;
+                    }
+                    String input = res.asInput(0);
+
+                    if (input != null && !input.isBlank()) {
+                        try {
+                            RenameWarp(player, warp.getName(), input);
+
+                        } catch (Exception e) {
+                            Constants.LOGGER.error("Error while renaming a warp! => ", e);
+                            player.sendSystemMessage(getTranslatedText("commands.geyser_tpc.warp.renameError", player)
+                                    .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                            return;
+                        }
+                    }
+
+                    new WarpActionGUI(player, warp);
+                });
+
+                FloodgateApi.getInstance().sendForm(player.getUUID(), form_builder.build());
+            }
         }
     }
 }
