@@ -2,9 +2,9 @@
 
 ---
 
-> A teleportation mod for Geyser-Fabric servers, based on [TeleportCommands](https://github.com/MrSnowy/teleport-commands)
+> A teleportation mod for Geyser-Fabric servers, based on [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands)
 >
-> Looking for the non-Geyser or NeoForge version? [Check it out here~](https://github.com/MrSnowy/teleport-commands)
+> Looking for the non-Geyser or NeoForge version? [Check it out here~](https://github.com/MrSn0wy/TeleportCommands)
 >
 > This mod adds commands like `/gtpa` to open GUI interfaces, providing a much better experience on touch-screen devices.
 
@@ -101,9 +101,9 @@
 
 ### Credits
 
-Special thanks to the original mod author [Mr. Snowy](https://github.com/user/MrSnowy)
+Special thanks to the original mod author [Mr.Snowy](https://github.com/MrSn0w)
 
-I really enjoyed the [TeleportCommands](https://github.com/MrSnowy/teleport-commands) mod, which inspired me to create this fork.
+I really enjoyed the [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands) mod, which inspired me to create this fork.
 
 ---
 
