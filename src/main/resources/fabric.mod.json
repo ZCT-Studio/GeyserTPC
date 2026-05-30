@@ -9,6 +9,8 @@
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/geysertpc",
+		"modrinth": "https://modrinth.com/mod/geysertpc",
+		"curseforge": "https://www.curseforge.com/minecraft/mc-mods/geysertpc",
 		"sources": "https://github.com/WJiangzhi/GeyserTPC",
 		"issues": "https://github.com/WJiangzhi/GeyserTPC/issues"
 	},
