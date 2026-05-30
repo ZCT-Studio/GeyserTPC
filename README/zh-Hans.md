@@ -1,107 +1,200 @@
-# [GTPA] GeyserTPA
+# GeyserTPC
 
 ### 🌏 [ [English](../README.md) | 简体中文 | [繁體中文](zh-Hant.md) ]
 
 ---
 
-> 一个用于 Geyser-Fabric 服务器的传送模组，基于 [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands)
+# GeyserTPC
+
+专为 Geyser-Fabric 服务器设计的跨平台传送工具模组。
+
+GeyserTPC 基于 [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands) 开发。TeleportCommands 为 Minecraft
+服务器提供了家园（Home）、地标点（Warp）、传送请求（TPA）、返回死亡点、返回主世界出生点等实用传送功能。
+
+本分支针对基岩版玩家的使用体验进行了优化，通过 Floodgate 提供原生基岩版界面支持，并增强了 Geyser 跨平台环境下的易用性与兼容性。
+
+## 功能特性
+
+* 家园（Home）管理系统
+* 全服地标点（Warp）系统
+* 玩家传送请求（TPA）系统
+* 返回死亡地点（`/back`）
+* 返回主世界出生点（`/worldspawn`）
+* 面向基岩版玩家优化的 GUI 界面
+* 基于 Geyser 的跨平台互通支持
+* Java 版快捷键支持（客户端与服务端同时安装时可用）
+
+## 基岩版支持
+
+安装 Floodgate 后，基岩版玩家可使用原生基岩版表单界面进行：
+
+* 家园管理（`/ghome`）
+* 地标点管理（`/gwarp`）
+* 传送请求管理（`/gtpa`）
+* 返回死亡点与出生点确认界面
+
+相比纯命令操作，该方式在手机、平板及主机平台上更加直观和易于使用。
+
+> **警告**
 >
-> 想要非 Geyser 或 NeoForge 版本？[点这里查看~](https://github.com/MrSn0wy/TeleportCommands)
->
-> 本模组新增类似 `/gtpa` 的指令，用于打开 GUI 界面，为触屏设备提供更好的体验。
-
-> [!WARNING]
-> 本模组的基岩版 UI 依赖 Floodgate 模组。
-> 
-> 如果服务器未安装 Floodgate，基岩版将无法打开 GUI。
-
-> [!NOTE]
-> 当服务器和客户端都安装本模组后，按下 `\` 键可快速打开 `/gtpa` GUI。
+> 如果服务器未安装 Floodgate，基岩版玩家将无法使用原生表单界面，而需要使用标准的物品栏 GUI 界面。
 
 ---
 
-### 可用指令
+## 界面展示
 
-- `/worldspawn [<关闭安全检查>]`  
-  传送到主世界出生点（主世界）。  
-  如果填写 `true`，将跳过安全检查。
+### TPA 菜单（Java 版 / 基岩版）
 
-- `/back [<关闭安全检查>]`  
-  传送到上一次死亡地点。  
-  如果填写 `true`，将跳过安全检查。
+![Tpa Menu](https://cdn.modrinth.com/data/5c5E3utm/images/aacc512143b127c3e8464c02b3b56f9057d4c1e8_350.webp)
 
-**“家（Home）”是仅玩家自己可访问的私人传送点。**
-- `/sethome <名称>`  
-  创建一个新家。
+`/gtpa` 命令打开的主菜单界面。
 
-- `/home [<名称>]`  
-  传送到某个家。  
-  如果未填写名称，将使用默认家。
+### 选择目标玩家（Java 版 / 基岩版）
 
-- `/ghome`  
-  打开家庭列表 GUI，可进行传送和删除操作。
+![Tpa to...](https://cdn.modrinth.com/data/5c5E3utm/images/797d6c060985574a42f05f1437297e459ebde4bf_350.webp)
 
-- `/delhome <名称>`  
-  删除一个家。
+选择要发送传送请求的目标玩家。
 
-- `/renamehome <名称> <新名称>`  
-  重命名一个家。
+### Home 菜单（Java 版 / 基岩版）
 
-- `/homes`  
-  显示所有家列表。
+![Home Menu](https://cdn.modrinth.com/data/5c5E3utm/images/f281376f2b6b24efb9a81b067f5e5f78e51327e0_350.webp)
 
-- `/defaulthome <名称>`  
-  设置默认家。
+`/ghome` 命令打开的家园管理界面。
 
-**“传送点（Warp）”是由管理员管理的公共地点，所有玩家可用。**
-- `/warp <名称>`  
-  传送到某个传送点。
+`/gwarp` 的操作方式与界面风格类似。
 
-- `/gwarp`  
-  打开传送点 GUI 列表（仅管理员），可进行传送和删除操作。
+### 不安全位置提示
 
-- `/warps`  
-  显示所有传送点。
+![Unsafe Destination Warning](https://cdn.modrinth.com/data/5c5E3utm/images/1103a30733bfe731b8c9bad63f4a133b48ecc860_350.webp)
 
-- `/setwarp <名称>`  
-  创建传送点，需要权限等级 4（管理员）。
-
-- `/delwarp <名称>`  
-  删除传送点，需要权限等级 4（管理员）。
-
-- `/renamewarp <名称> <新名称>`  
-  重命名传送点，需要权限等级 4（管理员）。
-
-**使用 “TPA” 可以请求传送到其他玩家或让其他玩家传送到你。**
-- `/tpa <玩家>`  
-  向其他玩家发送传送请求。
-
-- `/gtpa`  
-  打开请求 GUI，可接受/拒绝请求并发送请求。
-
-- `/tpahere <玩家>`  
-  向其他玩家发送“传送到我这里”的请求。
-
-- `/tpaaccept <玩家>`  
-  接受某个玩家的 tpa/tpahere 请求。
-
-- `/tpadeny <玩家>`  
-  拒绝某个玩家的 tpa/tpahere 请求。
+当 `/back` 或 `/worldspawn` 的目标位置存在安全风险时，将显示确认提示。
 
 ---
 
-### 待办事项
+## 指令列表
 
-- [ ] Search in BE UI
+### 世界与实用传送
+
+* `/worldspawn [<skipSafetyCheck>]`
+
+  传送至主世界出生点。
+
+  当参数为 `true` 时，将跳过安全检查。
+
+* `/back [<skipSafetyCheck>]`
+
+  传送至最近一次死亡的位置。
+
+  当参数为 `true` 时，将跳过安全检查。
+
+### Home 系统
+
+Home 为玩家个人专属传送点。
+
+* `/sethome <name>`
+
+  在当前位置创建一个 Home。
+
+* `/home [<name>]`
+
+  传送至指定 Home。
+
+  若未指定名称，则传送至默认 Home。
+
+* `/ghome`
+
+  打开 Home 管理界面。
+
+* `/delhome <name>`
+
+  删除指定 Home。
+
+* `/renamehome <name> <new_name>`
+
+  重命名指定 Home。
+
+* `/homes`
+
+  查看所有 Home。
+
+* `/defaulthome <name>`
+
+  设置默认 Home。
+
+### Warp 系统
+
+Warp 为服务器公共传送点，由管理员管理。
+
+* `/warp <name>`
+
+  传送至指定 Warp。
+
+* `/gwarp`
+
+  打开 Warp 管理界面（管理员）。
+
+* `/warps`
+
+  查看所有 Warp。
+
+* `/setwarp <name>`
+
+  创建 Warp。
+
+  需要 4 级权限。
+
+* `/delwarp <name>`
+
+  删除 Warp。
+
+  需要 4 级权限。
+
+* `/renamewarp <name> <new_name>`
+
+  重命名 Warp。
+
+  需要 4 级权限。
+
+### TPA 传送请求系统
+
+* `/tpa <player>`
+
+  向目标玩家发送传送请求。
+
+* `/gtpa`
+
+  打开 TPA 管理界面。
+
+* `/tpahere <player>`
+
+  请求目标玩家传送至自己所在位置。
+
+* `/tpaaccept <player>`
+
+  接受传送请求。
+
+* `/tpadeny <player>`
+
+  拒绝传送请求。
 
 ---
 
-### 致谢
+## 计划功能
 
-特别感谢原作者 [Mr.Snowy](https://github.com/MrSn0w)
-
-我非常喜欢 [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands) 模组，它启发我制作了这个分支版本。
+* 基岩版界面搜索功能
 
 ---
 
-### LICENSE - [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/LICENSE)
+## 致谢
+
+特别感谢原作者 [MrSnowy](https://github.com/MrSn0wy)。
+
+本项目基于 [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands) 开发，并在其基础上进行了适配与扩展。
+
+---
+
+## 许可证
+
+本项目采用 [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/LICENSE) 开源。
+
+原始 TeleportCommands 项目同样采用 [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/.orig_mod/LICENSE)开源。

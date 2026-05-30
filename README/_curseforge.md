@@ -1,6 +1,6 @@
 # GeyserTPC
 
-### 🌏 [ English | [简体中文](README/zh-Hans.md) | [繁體中文](README/zh-Hant.md) ]
+**🌏 Need instructions in other languages? Please visit the [GitHub](https://github.com/WJiangzhi/GeyserTPC)**
 
 ---
 
@@ -189,6 +189,8 @@ foundation for this fork.
 
 ## License
 
-This project is licensed under the [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/LICENSE).
+This project is licensed under
+the [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/LICENSE).
 
-The original Teleport Commands project is also licensed under the [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/.orig_mod/LICENSE).
+The original Teleport Commands project is also licensed under
+the [MIT License](https://raw.githubusercontent.com/WJiangzhi/GeyserTPC/refs/heads/master/.orig_mod/LICENSE).
