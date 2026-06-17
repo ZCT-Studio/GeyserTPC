@@ -361,7 +361,7 @@ public class tpa {
 
             for (int i = 18; i < 27; i++) {
                 this.setSlot(i,
-                        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.gray())
                                 .setName(Component.empty())
                 );
             }
@@ -524,7 +524,7 @@ public class tpa {
 
                 this.setSlot(i,
                         new GuiElementBuilder(
-                                Items.GRAY_STAINED_GLASS_PANE
+                                Items.STAINED_GLASS_PANE.gray()
                         ).setName(Component.empty())
                 );
             }
@@ -599,7 +599,7 @@ public class tpa {
             setTitle(Component.literal((here ? "[TPAHERE]" : "[TPA]") + fromPlayer.getName().getString()));
 
             this.setSlot(0,
-                    new GuiElementBuilder(Items.RED_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.red())
                             .setName(getTranslatedText("gui.geyser_tpc.tpa.tpareqdialog.deny", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();
@@ -633,7 +633,7 @@ public class tpa {
                             })
             );
             this.setSlot(4,
-                    new GuiElementBuilder(Items.LIME_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.lime())
                             .setName(getTranslatedText("gui.geyser_tpc.tpa.tpareqdialog.accept", player))
                             .setCallback((_, _, _, g) -> {
                                 g.close();

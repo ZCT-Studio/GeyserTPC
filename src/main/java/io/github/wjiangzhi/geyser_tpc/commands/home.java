@@ -647,7 +647,7 @@ public class home {
                 boolean isDefault = playerStorage != null && playerStorage.getDefaultHome().equals(home.getName().toLowerCase());
 
                 this.setSlot(slot,
-                        new GuiElementBuilder(isDefault ? Items.NETHER_STAR : Items.RED_BED)
+                        new GuiElementBuilder(isDefault ? Items.NETHER_STAR : Items.BED.red())
                                 .setName(Component.literal(home.getName()).append(isDefault ? Component.literal("[").append(getTranslatedText("gui.geyser_tpc.home.homegui.defaulthome", player)).append("]") : Component.empty()))
                                 .setCallback((i, t, a, g) -> {
                                     new HomeActionGUI(player, home, this).open();
@@ -661,7 +661,7 @@ public class home {
 
             for (int i = 18; i <= 23; i++) {
                 this.setSlot(i,
-                        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.gray())
                                 .setName(Component.empty())
                 );
             }
@@ -772,7 +772,7 @@ public class home {
 
             for (int i = 4; i <= 6; i++) {
                 this.setSlot(i,
-                        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.gray())
                                 .setName(Component.empty())
                 );
             }
@@ -811,7 +811,7 @@ public class home {
             setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).append(" Home \"" + home.getName() + "\""));
 
             this.setSlot(0,
-                    new GuiElementBuilder(Items.RED_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.red())
                             .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
@@ -822,7 +822,7 @@ public class home {
             );
 
             this.setSlot(4,
-                    new GuiElementBuilder(Items.LIME_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.lime())
                             .setName(getTranslatedText("gui.geyser_tpc.universal.gui.yes", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
@@ -872,7 +872,7 @@ public class home {
             boolean isDefault = playerStorage != null && playerStorage.getDefaultHome().equals(home.getName().toLowerCase());
 
             this.setSlot(0,
-                    new GuiElementBuilder(isDefault ? Items.NETHER_STAR : Items.RED_BED).setName(Component.literal(home.getName()))
+                    new GuiElementBuilder(isDefault ? Items.NETHER_STAR : Items.BED.red()).setName(Component.literal(home.getName()))
             );
 
             this.setSlot(1,

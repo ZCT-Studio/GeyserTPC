@@ -12,6 +12,11 @@ homes, warps, teleport requests, spawn teleportation, and other quality-of-life 
 This fork extends the original experience with Bedrock Edition support, offering Floodgate-powered graphical interfaces
 and cross-platform usability improvements for players joining through Geyser.
 
+> ***NOTE**
+>
+> The compatibility of this module version follows Geyser-Fabric,
+> and older versions will not be on the compatibility list.
+
 ## Features
 
 - Home management system

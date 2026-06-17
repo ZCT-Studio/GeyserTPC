@@ -13,6 +13,10 @@ GeyserTPC 基于 [TeleportCommands](https://github.com/MrSn0wy/TeleportCommands)
 
 本分支针对基岩版玩家的使用体验进行了优化，通过 Floodgate 提供原生基岩版界面支持，并增强了 Geyser 跨平台环境下的易用性与兼容性。
 
+> ***NOTE**
+>
+> 本模組版本兼容性跟隨Geyser-Fabric，舊版本不會在兼容列表
+
 ## 功能特性
 
 * 家园（Home）管理系统

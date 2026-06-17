@@ -502,7 +502,7 @@ public class warp {
 
             for (int i = 18; i <= 23; i++) {
                 this.setSlot(i,
-                        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
+                        new GuiElementBuilder(Items.STAINED_GLASS_PANE.gray())
                                 .setName(Component.empty())
                 );
             }
@@ -628,7 +628,7 @@ public class warp {
             setTitle(getTranslatedText("gui.geyser_tpc.universal.gui.del", player).append(" Warp \"" + warp.getName() + "\""));
 
             this.setSlot(0,
-                    new GuiElementBuilder(Items.RED_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.red())
                             .setName(getTranslatedText("gui.geyser_tpc.universal.gui.cancel", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
@@ -640,7 +640,7 @@ public class warp {
 
 
             this.setSlot(4,
-                    new GuiElementBuilder(Items.LIME_CONCRETE)
+                    new GuiElementBuilder(Items.CONCRETE.lime())
                             .setName(getTranslatedText("gui.geyser_tpc.universal.gui.yes", player))
                             .setCallback((i, t, a, g) -> {
                                 g.close();
