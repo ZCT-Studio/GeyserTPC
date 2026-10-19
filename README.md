@@ -14,7 +14,7 @@ and cross-platform usability improvements for players joining through Geyser.
 
 > ***NOTE**
 >
-> The compatibility of this module version follows Geyser-Fabric,
+> The compatibility of this mod version follows Geyser-Fabric,
 > and older versions will not be on the compatibility list.
 
 ## Features
